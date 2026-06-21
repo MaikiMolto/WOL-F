@@ -15,11 +15,11 @@
   var T = {
     de: { wake: 'Wecken', sleep: 'Schlafen', current: 'Aktuell', none: 'Kein Zeitplan',
           workdays: 'Werktags', daily: 'Täglich', weekend: 'Wochenende',
-          time: 'Uhrzeit', preview: 'Vorschau', plan: 'Planen', del: 'Löschen',
+          time: 'Uhrzeit', preview: 'Vorschau', plan: 'Planen', ok: 'OK', del: 'Löschen',
           pickHint: 'Bitte Tag(e) und Uhrzeit wählen.', weekendShort: 'Wochenende' },
     en: { wake: 'Wake', sleep: 'Sleep', current: 'Current', none: 'No schedule',
           workdays: 'Weekdays', daily: 'Daily', weekend: 'Weekend',
-          time: 'Time', preview: 'Preview', plan: 'Schedule', del: 'Delete',
+          time: 'Time', preview: 'Preview', plan: 'Schedule', ok: 'OK', del: 'Delete',
           pickHint: 'Please pick day(s) and a time.', weekendShort: 'Weekend' }
   };
   function tr(k) { var l = lang(); return (T[l] && T[l][k]) || (T.de[k]) || k; }
@@ -111,12 +111,14 @@
       cur = '<div class="wf-cron-current-row">' +
             '<span class="wf-cron-current-lbl">' + esc(tr('current')) + ':</span> ' +
             '<span class="wf-cron-current-val">' + prettySchedule(currentCron) + '</span>' +
-            '<button type="button" class="wf-pill wf-pill-danger wf-pill-sm wf-cron-delbtn" ' +
-            'data-mac="' + esc(mac) + '" data-type="' + type + '">' + esc(tr('del')) + '</button>' +
             '</div>';
     } else {
       cur = '<div class="wf-cron-current-row wf-cron-none">' + esc(tr('none')) + '</div>';
     }
+
+    var actionBtn = currentCron
+      ? '<button type="button" class="wf-pill wf-pill-danger wf-pill-sm wf-cron-actbtn" data-mac="' + esc(mac) + '" data-type="' + type + '" data-act="del">' + esc(tr('del')) + '</button>'
+      : '<button type="button" class="wf-pill wf-pill-ok wf-pill-sm wf-cron-actbtn" data-mac="' + esc(mac) + '" data-type="' + type + '" data-prefix="' + prefix + '" data-act="plan">' + esc(tr('ok')) + '</button>';
 
     return '' +
       '<div class="wf-cron-sec" id="' + prefix + '">' +
@@ -135,8 +137,7 @@
       '  <div class="wf-cron-foot">' +
       '    <span class="wf-cron-preview-lbl">' + esc(tr('preview')) + ':</span> ' +
       '    <span class="wf-cron-preview wf-cron-preview-empty" id="' + prefix + '-preview">\u2014</span>' +
-      '    <button type="button" class="wf-pill wf-pill-accent wf-pill-sm wf-cron-planbtn" ' +
-      'data-mac="' + esc(mac) + '" data-type="' + type + '" data-prefix="' + prefix + '">' + esc(tr('plan')) + '</button>' +
+      actionBtn +
       '  </div>' +
       '  <div class="wf-cron-hint" id="' + prefix + '-hint"></div>' +
       '</div>';
@@ -182,10 +183,12 @@
       updatePreview(sec2.id);
       return;
     }
-    var plan = e.target.closest && e.target.closest('.wf-cron-planbtn');
-    if (plan) { wfPlanCron(plan.getAttribute('data-mac'), plan.getAttribute('data-type'), plan.getAttribute('data-prefix')); return; }
-    var del = e.target.closest && e.target.closest('.wf-cron-delbtn');
-    if (del) { wfDeleteCron(del.getAttribute('data-mac'), del.getAttribute('data-type')); return; }
+    var act = e.target.closest && e.target.closest('.wf-cron-actbtn');
+    if (act) {
+      if (act.getAttribute('data-act') === 'del') wfDeleteCron(act.getAttribute('data-mac'), act.getAttribute('data-type'));
+      else wfPlanCron(act.getAttribute('data-mac'), act.getAttribute('data-type'), act.getAttribute('data-prefix'));
+      return;
+    }
   });
 
   document.addEventListener('change', function (e) {

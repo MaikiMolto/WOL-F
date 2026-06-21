@@ -296,7 +296,9 @@ def check_invalid_cron(cron):
   return any(not re.match(pattern, part) for pattern, part in zip(patterns, parts))
 
 def delete_cron_entry(request_mac_address):
-  reversed_mac = ':'.join(reversed(request_mac_address.split(':')))
+  # Exact MAC match only: WOL stores under mac, SOL under reversed-mac. Matching
+  # both here would let delete_wol_cron also nuke the SOL entry (and vice versa).
+  # delete_computer() cleans both directions via two explicit calls.
   with cron_lock():
     with open(cron_filename, 'r') as f:
       lines = f.readlines()
@@ -314,7 +316,7 @@ def delete_cron_entry(request_mac_address):
         new_lines.append(line)
         continue
       fields = stripped.split()
-      if len(fields) >= 7 and fields[-1] in (request_mac_address, reversed_mac):
+      if len(fields) >= 7 and fields[-1] == request_mac_address:
         deleted = True
         continue
       new_lines.append(line)

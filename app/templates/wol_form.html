@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/brands.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/solid.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=11">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=16">
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/updatestatus.js') }}"></script>
     <script>
@@ -22,6 +22,8 @@
       const delete_wol_cron_url = "{{ url_for('delete_wol_cron') }}"
       const delete_sol_cron_url = "{{ url_for('delete_sol_cron') }}"
       const wol_or_sol_send_url = "{{ url_for('wol_or_sol_send') }}";
+      const toggle_cron_url = "{{ url_for('toggle_cron') }}";
+      function toggleCron(mac, btn){ fetch(toggle_cron_url,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"mac_address="+encodeURIComponent(mac)}).then(function(r){return r.json();}).then(function(d){ var paused=d.paused; if(!btn) return; btn.classList.toggle("aktiv", !paused); var foot=btn.closest(".wf-foot"); var lbl=foot?foot.querySelector(".wf-joblbl"):null; if(lbl){ var ex=lbl.querySelector(".wf-paused"); if(paused){ if(!ex){ var dv=document.createElement("div"); dv.className="wf-paused"; dv.setAttribute("data-i18n","schedPaused"); dv.textContent=(window.wfGetLang&&window.wfGetLang()==="en")?"paused":"pausiert"; lbl.appendChild(dv);} } else { if(ex) ex.remove(); } } }).catch(function(e){}); }
 
       {% if os.environ.get('ENABLE_REFRESH') != 'false' -%}
         setInterval(() => {
@@ -152,10 +154,11 @@
             {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
             <div class="card-footer wf-foot">
               {% if computer.cron_wol_schedule is defined or computer.cron_sol_schedule is defined -%}
-              <div class="wf-jobsw aktiv"><span class="k"></span></div>
+              <button type="button" class="wf-jobsw{% if not computer.cron_paused %} aktiv{% endif %}" data-tipkey="tipJob" title="Zeitplan pausieren" onclick="toggleCron('{{ computer.mac_address }}', this)"><span class="k"></span></button>
               <div class="wf-joblbl">
                 {% if computer.cron_wol_schedule is defined -%}<div><span class="wf-up">&#8593;</span> <b>{{ computer.cron_wol_schedule }}</b></div>{% endif -%}
                 {% if computer.cron_sol_schedule is defined -%}<div><span class="wf-down">&#8595;</span> <b>{{ computer.cron_sol_schedule }}</b></div>{% endif -%}
+                {% if computer.cron_paused -%}<div class="wf-paused" data-i18n="schedPaused">pausiert</div>{% endif -%}
               </div>
               {% else -%}
               <div class="wf-jobsw"><span class="k"></span></div>
@@ -187,40 +190,40 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="addComputerLabel">Add Computer</h5>
+            <h5 class="modal-title" id="addComputerLabel" data-i18n="mAddTitle">Gerät hinzufügen</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form method="POST" action="{{ url_for('add_computer') }}">
           <div class="modal-body">
             <div class="form-group">
-              <label for="name">Name:</label>
+              <label for="name" data-i18n="mName">Name:</label>
               <input type="text" class="form-control" name="name" id="name" required>
             </div>
             <div class="form-group">
-              <label for="mac_address">MAC address:</label>
+              <label for="mac_address" data-i18n="mMac">MAC-Adresse:</label>
               <input type="text" class="form-control" name="mac_address" id="mac_address" placeholder="00:11:22:33:44:55" required>
             </div>
             <div class="form-group">
-              <label for="ip_address">IP address:</label>
+              <label for="ip_address" data-i18n="mIp">IP-Adresse:</label>
               <input type="text" class="form-control" name="ip_address" id="ip_address" placeholder="192.168.0.1" required>
             </div>
             <div class="form-group">
-              <label for="test_type">Status Check:</label>
+              <label for="test_type" data-i18n="mCheck">Status-Prüfung:</label>
               <input type="text" class="form-control" name="test_type" id="test_type" placeholder="icmp, arp or port number" required>
             </div>
             <div class="form-group">
-              <label for="type">Gerätetyp (optional):</label>
-              <input type="text" class="form-control" name="type" id="type" placeholder="z.B. SRV, NAS, PC" maxlength="16">
+              <label for="type" data-i18n="mType">Gerätetyp (optional):</label>
+              <input type="text" class="form-control" name="type" id="type" placeholder="z.B. SRV, NAS, PC" data-i18n-ph="phType" maxlength="16">
             </div>
             <div class="form-group">
-              <label for="link">Web-UI Link (optional):</label>
+              <label for="link" data-i18n="mLink">Web-UI-Link (optional):</label>
               <input type="text" class="form-control" name="link" id="link" placeholder="http://192.168.0.1:8006">
             </div>
           </div>
           <div class="modal-footer">
-                <button class="btn btn-primary" id="arpScanButton" data-bs-target="#arpScan" data-bs-toggle="modal" data-bs-dismiss="modal">Scan Network</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-success" id="confirmAdd">Add</button>
+                <button class="btn btn-primary" id="arpScanButton" data-bs-target="#arpScan" data-bs-toggle="modal" data-bs-dismiss="modal" data-i18n="mScan">Netzwerk scannen</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="mCancel">Abbrechen</button>
+                <button type="submit" class="btn btn-success" id="confirmAdd" data-i18n="mAdd">Hinzufügen</button>
           </div>
           </form>
         </div>
@@ -231,39 +234,39 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="editComputerLabel">Edit Computer</h5>
+            <h5 class="modal-title" id="editComputerLabel" data-i18n="mEditTitle">Gerät bearbeiten</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form method="POST" action="{{ url_for('edit_computer') }}">
           <div class="modal-body">
               <div class="form-group">
-                <label for="name">Name:</label>
+                <label for="name" data-i18n="mName">Name:</label>
                 <input type="text" class="form-control" name="name" id="edit_name" required>
               </div>
               <div class="form-group">
-                <label for="mac_address">MAC address:</label>
+                <label for="mac_address" data-i18n="mMac">MAC-Adresse:</label>
                 <input type="text" class="form-control-plaintext text-primary" name="mac_address" id="edit_mac_address" placeholder="00:11:22:33:44:55" readonly required>
               </div>
               <div class="form-group">
-                <label for="ip_address">IP address:</label>
+                <label for="ip_address" data-i18n="mIp">IP-Adresse:</label>
                 <input type="text" class="form-control" name="ip_address" id="edit_ip_address" placeholder="192.168.0.1" required>
               </div>
               <div class="form-group">
-                <label for="test_type">Status Check:</label>
+                <label for="test_type" data-i18n="mCheck">Status-Prüfung:</label>
                 <input type="text" class="form-control" name="test_type" id="edit_test_type" placeholder="icmp or port number" required>
               </div>
               <div class="form-group">
-                <label for="type">Gerätetyp (optional):</label>
-                <input type="text" class="form-control" name="type" id="edit_type" placeholder="z.B. SRV, NAS, PC" maxlength="16">
+                <label for="type" data-i18n="mType">Gerätetyp (optional):</label>
+                <input type="text" class="form-control" name="type" id="edit_type" placeholder="z.B. SRV, NAS, PC" data-i18n-ph="phType" maxlength="16">
               </div>
               <div class="form-group">
-                <label for="link">Web-UI Link (optional):</label>
+                <label for="link" data-i18n="mLink">Web-UI-Link (optional):</label>
                 <input type="text" class="form-control" name="link" id="edit_link" placeholder="http://192.168.0.1:8006">
               </div>
           </div>
           <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-success" id="confirmEdit">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="mCancel">Abbrechen</button>
+                <button type="submit" class="btn btn-success" id="confirmEdit" data-i18n="mSave">Speichern</button>
           </div>
           </form>
         </div>
@@ -274,14 +277,14 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="cronSettingsModalLabel">Schedule Wake or Sleep</h5>
+            <h5 class="modal-title" id="cronSettingsModalLabel" data-i18n="mCronTitle">Wecken/Schlafen planen</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div id="cronSettingsContent"></div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="mClose">Schließen</button>
           </div>
         </div>
       </div>
@@ -291,15 +294,15 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="staticDeleteLabel">Confirm Deletion</h5>
+            <h5 class="modal-title" id="staticDeleteLabel" data-i18n="mDelTitle">Löschen bestätigen</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            Are you sure you want to delete the <strong id="deleteMessage"></strong> ?
+            <span data-i18n="mDelConfirm">Wirklich löschen:</span> <strong id="deleteMessage"></strong>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="mCancel">Abbrechen</button>
+            <button type="button" class="btn btn-danger" id="confirmDelete" data-i18n="mDelete">Löschen</button>
           </div>
         </div>
       </div>
@@ -309,15 +312,15 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="arpScanLabel">Select a Device</h5>
+            <h5 class="modal-title" id="arpScanLabel" data-i18n="mArpTitle">Gerät auswählen</h5>
             <button type="button" class="btn-close" data-bs-target="#addComputer" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <div id="loadingMessage">Scanning in progress...</div>
+            <div id="loadingMessage" data-i18n="mScanning">Scanne läuft …</div>
             <ul id="arpScanResults" class="list-group" style="display: none;"></ul>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-success" data-bs-target="#addComputer" data-bs-toggle="modal" data-bs-dismiss="modal">Validate</button>
+            <button type="button" class="btn btn-success" data-bs-target="#addComputer" data-bs-toggle="modal" data-bs-dismiss="modal" data-i18n="mValidate">Übernehmen</button>
           </div>
         </div>
       </div>
@@ -328,7 +331,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="aboutModalLabel">About</h5>
+            <h5 class="modal-title" id="aboutModalLabel" data-i18n="mAboutTitle">Über</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -345,7 +348,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="mClose">Schließen</button>
           </div>
         </div>
       </div>
@@ -353,7 +356,7 @@
 
     {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
     <script src="{{ url_for('static', filename='js/editcomputer.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/editcron.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/editcron.js') }}?v=12"></script>
     <script src="{{ url_for('static', filename='js/delcomputer.js') }}"></script>
     {% endif -%}
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
@@ -382,8 +385,8 @@
         function getLang(){ try { return localStorage.getItem("wfLang") || "de"; } catch(e){ return "de"; } }
         window.wfGetLang = getLang;
         var dict = {
-          de: { wakeAll:"Alle wecken", sleepAll:"Alle schlafen", addDevice:"Ger\u00e4t", scheduleOff:"Schedule aus", searchPh:"Suche Name, MAC, IP", sortName:"Nach Name", sortIp:"Nach IP", sortMac:"Nach MAC" },
-          en: { wakeAll:"Wake all", sleepAll:"Sleep all", addDevice:"Device", scheduleOff:"Schedule off", searchPh:"Search name, MAC, IP", sortName:"Sort by Name", sortIp:"Sort by IP", sortMac:"Sort by MAC" }
+          de: { wakeAll:"Alle wecken", sleepAll:"Alle schlafen", addDevice:"Ger\u00e4t", scheduleOff:"Schedule aus", searchPh:"Suche Name, MAC, IP", sortName:"Nach Name", sortIp:"Nach IP", sortMac:"Nach MAC", mAddTitle:"Gerät hinzufügen", mEditTitle:"Gerät bearbeiten", mCronTitle:"Wecken/Schlafen planen", mDelTitle:"Löschen bestätigen", mArpTitle:"Gerät auswählen", mAboutTitle:"Über", mName:"Name:", mMac:"MAC-Adresse:", mIp:"IP-Adresse:", mCheck:"Status-Prüfung:", mType:"Gerätetyp (optional):", mLink:"Web-UI-Link (optional):", mScan:"Netzwerk scannen", mCancel:"Abbrechen", mAdd:"Hinzufügen", mSave:"Speichern", mClose:"Schließen", mDelete:"Löschen", mValidate:"Übernehmen", mDelConfirm:"Wirklich löschen:", mScanning:"Scanne läuft …", schedPaused:"pausiert", phType:"z.B. SRV, NAS, PC" },
+          en: { wakeAll:"Wake all", sleepAll:"Sleep all", addDevice:"Device", scheduleOff:"Schedule off", searchPh:"Search name, MAC, IP", sortName:"Sort by Name", sortIp:"Sort by IP", sortMac:"Sort by MAC", mAddTitle:"Add Computer", mEditTitle:"Edit Computer", mCronTitle:"Schedule Wake or Sleep", mDelTitle:"Confirm Deletion", mArpTitle:"Select a Device", mAboutTitle:"About", mName:"Name:", mMac:"MAC address:", mIp:"IP address:", mCheck:"Status Check:", mType:"Device type (optional):", mLink:"Web-UI-Link (optional):", mScan:"Scan Network", mCancel:"Cancel", mAdd:"Add", mSave:"Save", mClose:"Close", mDelete:"Delete", mValidate:"Validate", mDelConfirm:"Really delete:", mScanning:"Scanning in progress …", schedPaused:"paused", phType:"e.g. SRV, NAS, PC" }
         };
         function wfUpdateStats(){ var on=document.querySelectorAll(".smart-switch.on").length, off=document.querySelectorAll(".smart-switch.off").length; var a=document.getElementById("statOnline"), b=document.getElementById("statOffline"); if(a)a.textContent=on; if(b)b.textContent=off; }
         setInterval(wfUpdateStats,1200); window.addEventListener("load",wfUpdateStats);
@@ -409,8 +412,8 @@
         if(pOn) pOn.addEventListener("click",function(){ wfBulk(".smart-switch.on","sleep"); });
         if(pOff) pOff.addEventListener("click",function(){ wfBulk(".smart-switch.off","wake"); });
         var tipDict={
-          de:{tipOnline:"Alle online Geräte runterfahren",tipOffline:"Alle offline Geräte wecken",tipCron:"Zeitplan (Cron) einrichten",tipEdit:"Gerät bearbeiten",tipTrash:"Gerät löschen",tipSort:"Sortieren",tipTheme:"Hell-/Dunkelmodus",tipAdd:"Neues Gerät hinzufügen",tipAbout:"Über WOL-F",tipClear:"Suche löschen",tipWebui:"Web-UI öffnen",tipToggle:"Klicken zum Schalten"},
-          en:{tipOnline:"Shut down all online devices",tipOffline:"Wake all offline devices",tipCron:"Configure schedule (cron)",tipEdit:"Edit device",tipTrash:"Delete device",tipSort:"Sort",tipTheme:"Light/Dark mode",tipAdd:"Add new device",tipAbout:"About WOL-F",tipClear:"Clear search",tipWebui:"Open web UI",tipToggle:"Click to toggle"}
+          de:{tipOnline:"Alle online Geräte runterfahren",tipOffline:"Alle offline Geräte wecken",tipCron:"Zeitplan (Cron) einrichten",tipEdit:"Gerät bearbeiten",tipTrash:"Gerät löschen",tipSort:"Sortieren",tipTheme:"Hell-/Dunkelmodus",tipAdd:"Neues Gerät hinzufügen",tipAbout:"Über WOL-F",tipClear:"Suche löschen",tipWebui:"Web-UI öffnen",tipToggle:"Klicken zum Schalten", tipJob:"Zeitplan pausieren/aktivieren"},
+          en:{tipOnline:"Shut down all online devices",tipOffline:"Wake all offline devices",tipCron:"Configure schedule (cron)",tipEdit:"Edit device",tipTrash:"Delete device",tipSort:"Sort",tipTheme:"Light/Dark mode",tipAdd:"Add new device",tipAbout:"About WOL-F",tipClear:"Clear search",tipWebui:"Open web UI",tipToggle:"Click to toggle", tipJob:"Pause/resume schedule"}
         };
         function wfApplyTips(lang){ if(!window.bootstrap) return; var d=tipDict[lang]||tipDict.de; document.querySelectorAll("[data-tipkey]").forEach(function(el){ var txt=d[el.getAttribute("data-tipkey")]; if(!txt) return; var old=bootstrap.Tooltip.getInstance(el); if(old) old.dispose(); el.setAttribute("title",txt); new bootstrap.Tooltip(el,{trigger:"hover focus",placement: el.closest(".card")?"top":"bottom"}); }); }
         function wfSetLang(lang){ var d=dict[lang]; if(!d) return;

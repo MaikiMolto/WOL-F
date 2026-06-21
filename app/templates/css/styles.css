@@ -384,3 +384,12 @@ html[data-bs-theme="light"] .wf-menu.open{background:#ffffff;border-color:#d3dae
 html[data-bs-theme="light"] .wf-sort .dropdown-menu{background:#ffffff;border-color:#d3dae3}
 html[data-bs-theme="light"] .wf-sort .dropdown-item{color:#1b2533}
 html[data-bs-theme="light"] .wf-sort .dropdown-item:hover,html[data-bs-theme="light"] .wf-sort .dropdown-item.active{background:#eef3f8;color:#0b7d96}
+
+/* fixed-size + Gerät / + Device button (equal width in DE/EN) */
+.wf-add{min-width:116px;text-align:center}
+
+/* functional schedule pause toggle + light-mode colour fix */
+.wf-jobsw{cursor:pointer;border:none;padding:0;-webkit-appearance:none;appearance:none}
+.wf-jobsw:hover{filter:brightness(1.12)}
+html[data-bs-theme="light"] .wf-jobsw.aktiv{background:#2fb344}
+.wf-paused{font-size:10px;color:var(--wf-pend);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}

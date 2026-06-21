@@ -219,20 +219,28 @@ def load_computers():
 
   with open(cron_filename) as f:
     for line in f:
-      if not line.startswith('#'):
-        fields = line.strip().split()
-        schedule = ' '.join(fields[:5])
-        user = fields[5]
-        command = ' '.join(fields[6:])
-        mac_address = command.split()[-1]
-        reversed_mac_address = ':'.join(reversed(mac_address.split(':')))
-
-        # Find and add cron info to matching computer
-        for computer in computers:
-          if computer['mac_address'] == mac_address:
-            computer['cron_wol_schedule'] = schedule
-          if computer['mac_address'] == reversed_mac_address:
-            computer['cron_sol_schedule'] = schedule
+      raw = line.strip()
+      paused = False
+      if raw.startswith('#PAUSED '):
+        paused = True
+        raw = raw[len('#PAUSED '):].strip()
+      if not raw or raw.startswith('#'):
+        continue
+      fields = raw.split()
+      if len(fields) < 7:
+        continue
+      schedule = ' '.join(fields[:5])
+      mac_address = fields[-1]
+      reversed_mac_address = ':'.join(reversed(mac_address.split(':')))
+      for computer in computers:
+        if computer['mac_address'] == mac_address:
+          computer['cron_wol_schedule'] = schedule
+          if paused:
+            computer['cron_paused'] = True
+        if computer['mac_address'] == reversed_mac_address:
+          computer['cron_sol_schedule'] = schedule
+          if paused:
+            computer['cron_paused'] = True
 
   return computers
 
@@ -520,6 +528,33 @@ def delete_sol_cron():
   reversed_mac_address = ':'.join(reversed(request_mac_address.split(':')))
   delete_cron_entry(reversed_mac_address)
   return redirect(url_for('wol_form'))
+
+@app.route('/toggle_cron', methods=['POST'])
+@login_required
+def toggle_cron():
+  request_mac = request.form['mac_address']
+  reversed_mac = ':'.join(reversed(request_mac.split(':')))
+  with open(cron_filename, 'r') as f:
+    lines = f.readlines()
+  new_lines = []
+  result_paused = False
+  matched = False
+  for line in lines:
+    raw = line.rstrip('\n')
+    is_paused = raw.startswith('#PAUSED ')
+    work = raw[len('#PAUSED '):] if is_paused else raw
+    stripped = work.strip()
+    if stripped and not stripped.startswith('#'):
+      fields = stripped.split()
+      if len(fields) >= 7 and fields[-1] in (request_mac, reversed_mac):
+        matched = True
+        result_paused = not is_paused
+        new_lines.append((work if is_paused else '#PAUSED ' + work) + '\n')
+        continue
+    new_lines.append(line)
+  with open(cron_filename, 'w') as f:
+    f.writelines(new_lines)
+  return jsonify({'matched': matched, 'paused': result_paused})
 
 @app.route('/check_status')
 @login_required

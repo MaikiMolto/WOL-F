@@ -8,6 +8,8 @@ const PENDING_TIMEOUT_MS = 4 * 60 * 1000;  // 4 Min Notbremse, falls die Kiste n
 // laufende Schaltvorgaenge: mac -> { target, poll, timeout }
 const pendingSwitches = {};
 
+function ssT(k){var L='de';try{L=(window.wfGetLang&&window.wfGetLang())||'de';}catch(e){}var D={de:{online:'Online',offline:'Offline',up:'f\u00e4hrt hoch \u2026',down:'f\u00e4hrt runter \u2026',timeout:'Timeout'},en:{online:'Online',offline:'Offline',up:'booting \u2026',down:'shutting down \u2026',timeout:'Timeout'}};return (D[L]&&D[L][k])||D.de[k];}
+
 function ssCheckStatus(sw) {
   const ip = sw.dataset.ipAddress;
   const tt = sw.dataset.testType;
@@ -28,20 +30,20 @@ function ssSetVisual(sw, state) {
     sw.classList.add('on');
     sw.setAttribute('aria-checked', 'true');
     sw.title = 'Ausschalten (Sleep on LAN)';
-    if (label) { label.innerHTML = '&#9679; Online'; label.classList.add('on'); }
+    if (label) { label.innerHTML = '&#9679; ' + ssT('online'); label.classList.add('on'); }
     if (dot) { dot.classList.remove('asleep'); dot.classList.add('awake'); }
   } else if (state === 'off') {
     sw.classList.add('off');
     sw.setAttribute('aria-checked', 'false');
     sw.title = 'Einschalten (Wake on LAN)';
-    if (label) { label.innerHTML = '&#9679; Offline'; label.classList.add('off'); }
+    if (label) { label.innerHTML = '&#9679; ' + ssT('offline'); label.classList.add('off'); }
     if (dot) { dot.classList.remove('awake'); dot.classList.add('asleep'); }
   } else { // 'up' | 'down' -> pending
     sw.classList.add('pending');
     sw.title = 'schaltet \u2026';
     if (label) {
-      label.innerHTML = (state === 'up') ? '&#10227; f\u00e4hrt hoch \u2026'
-                                         : '&#10227; f\u00e4hrt runter \u2026';
+      label.innerHTML = (state === 'up') ? '&#10227; ' + ssT('up')
+                                         : '&#10227; ' + ssT('down');
       label.classList.add('pending');
     }
   }
@@ -76,7 +78,7 @@ function ssFlashTimeout(sw) {
   const label = card ? card.querySelector('.smart-status') : null;
   if (label) {
     label.classList.add('timeout');
-    label.innerHTML = '&#9888; Timeout';
+    label.innerHTML = '&#9888; ' + ssT('timeout');
   }
   setTimeout(() => { ssRefresh(sw); }, 3500);       // danach echten Status zeigen
 }

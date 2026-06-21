@@ -1,0 +1,8 @@
+.venv/
+app/templates/assets/
+app/db/
+render-setup.sh
+__pycache__/
+*.pyc
+build*.log
+*.old

@@ -222,4 +222,19 @@
     var delUrl = type === 'wol' ? delete_wol_cron_url : delete_sol_cron_url;
     post(delUrl, mac).then(function () { location.reload(); }).catch(function () { location.reload(); });
   };
+
+  // Expose the human-readable formatter and prettify the cron labels shown on
+  // the device cards (so the card matches the friendly dialog instead of raw cron).
+  window.wfPrettySchedule = prettySchedule;
+  window.wfPrettifyCards = function () {
+    [].slice.call(document.querySelectorAll('.wf-sched[data-cron]')).forEach(function (el) {
+      var c = el.getAttribute('data-cron');
+      if (c) el.textContent = prettySchedule(c);
+    });
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', window.wfPrettifyCards);
+  } else {
+    window.wfPrettifyCards();
+  }
 })();

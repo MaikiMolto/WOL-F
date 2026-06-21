@@ -149,8 +149,8 @@
               {% if computer.cron_wol_schedule is defined or computer.cron_sol_schedule is defined -%}
               <button type="button" class="wf-jobsw{% if not computer.cron_paused %} aktiv{% endif %}" data-tipkey="tipJob" title="Zeitplan pausieren" onclick="toggleCron('{{ computer.mac_address }}', this)"><span class="k"></span></button>
               <div class="wf-joblbl">
-                {% if computer.cron_wol_schedule is defined -%}<div><span class="wf-up">&#8593;</span> <b>{{ computer.cron_wol_schedule }}</b></div>{% endif -%}
-                {% if computer.cron_sol_schedule is defined -%}<div><span class="wf-down">&#8595;</span> <b>{{ computer.cron_sol_schedule }}</b></div>{% endif -%}
+                {% if computer.cron_wol_schedule is defined -%}<div><span class="wf-up">&#8593;</span> <b class="wf-sched" data-cron="{{ computer.cron_wol_schedule }}">{{ computer.cron_wol_schedule }}</b></div>{% endif -%}
+                {% if computer.cron_sol_schedule is defined -%}<div><span class="wf-down">&#8595;</span> <b class="wf-sched" data-cron="{{ computer.cron_sol_schedule }}">{{ computer.cron_sol_schedule }}</b></div>{% endif -%}
                 {% if computer.cron_paused -%}<div class="wf-paused" data-i18n="schedPaused">pausiert</div>{% endif -%}
               </div>
               {% else -%}
@@ -349,7 +349,7 @@
 
     {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
     <script src="{{ url_for('static', filename='js/editcomputer.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/editcron.js') }}?v=14"></script>
+    <script src="{{ url_for('static', filename='js/editcron.js') }}?v=15"></script>
     <script src="{{ url_for('static', filename='js/delcomputer.js') }}"></script>
     {% endif -%}
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>

@@ -89,9 +89,6 @@
 
       <a class="wf-iconbtn" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal" aria-label="About" data-tipkey="tipAbout" title="About"><i class="fa-solid fa-info-circle"></i></a>
 
-      {% if os.environ.get('ENABLE_LOGIN') == 'true' or os.environ.get('OIDC_ENABLED') == 'true' -%}
-      <a class="wf-iconbtn danger" href="{{ url_for('logout') }}" aria-label="Logout" title="Logout"><i class="fa-solid fa-sign-out"></i></a>
-      {% endif -%}
       </div>
     </header>
 

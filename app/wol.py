@@ -178,6 +178,8 @@ class Computer(db.Model):
   mac_address = db.Column(db.String(17), unique=True, primary_key=True, nullable=False)
   ip_address = db.Column(db.String(45), nullable=False)
   test_type = db.Column(db.String(10), nullable=False)
+  type = db.Column(db.String(16))
+  link = db.Column(db.String(255))
 
 def migrate_txt_to_db():
   if not os.path.exists(computer_filename):
@@ -206,7 +208,9 @@ def load_computers():
       'name': c.name,
       'mac_address': c.mac_address,
       'ip_address': c.ip_address,
-      'test_type': c.test_type
+      'test_type': c.test_type,
+      'type': c.type,
+      'link': c.link
     })
 
   # Cron loading
@@ -408,6 +412,10 @@ def add_computer():
   mac_address = request.form['mac_address']
   ip_address = request.form['ip_address']
   test_type = request.form['test_type']
+  dev_type = (request.form.get('type') or '').strip() or None
+  dev_link = (request.form.get('link') or '').strip() or None
+  if dev_link and not re.match(r'^https?://', dev_link):
+    dev_link = 'http://' + dev_link
 
   messages = []
   # Check Entries
@@ -424,7 +432,7 @@ def add_computer():
   if messages:
     return generate_modal_html(messages, 'Add Computer Error')
 
-  new_computer = Computer(name=name, mac_address=mac_address, ip_address=ip_address, test_type=test_type)
+  new_computer = Computer(name=name, mac_address=mac_address, ip_address=ip_address, test_type=test_type, type=dev_type, link=dev_link)
   db.session.add(new_computer)
   db.session.commit()
 
@@ -437,6 +445,10 @@ def edit_computer():
   mac_address = request.form['mac_address']
   ip_address = request.form['ip_address']
   test_type = request.form['test_type']
+  dev_type = (request.form.get('type') or '').strip() or None
+  dev_link = (request.form.get('link') or '').strip() or None
+  if dev_link and not re.match(r'^https?://', dev_link):
+    dev_link = 'http://' + dev_link
 
   # Find the computer being edited
   computer_to_edit = Computer.query.filter_by(mac_address=mac_address).first()
@@ -453,13 +465,15 @@ def edit_computer():
   if messages:
     return generate_modal_html(messages, 'Edit Computer Error')
 
-  if (computer_to_edit.name == name and computer_to_edit.ip_address == ip_address and computer_to_edit.test_type == test_type):
+  if (computer_to_edit.name == name and computer_to_edit.ip_address == ip_address and computer_to_edit.test_type == test_type and computer_to_edit.type == dev_type and computer_to_edit.link == dev_link):
     messages.append(f'No change was made.')
     return generate_modal_html(messages, 'Edit Computer Info')
 
   computer_to_edit.name = name
   computer_to_edit.ip_address = ip_address
   computer_to_edit.test_type = test_type
+  computer_to_edit.type = dev_type
+  computer_to_edit.link = dev_link
   db.session.commit()
 
   return redirect(url_for('wol_form'))
@@ -578,6 +592,20 @@ def arp_scan():
   except Exception as e:
     return jsonify({'message': str(e)}), 500
 
+def ensure_columns():
+  import sqlite3
+  try:
+    con = sqlite3.connect(db_path)
+    cols = [r[1] for r in con.execute("PRAGMA table_info(computer)").fetchall()]
+    if 'type' not in cols:
+      con.execute("ALTER TABLE computer ADD COLUMN type VARCHAR(16)")
+    if 'link' not in cols:
+      con.execute("ALTER TABLE computer ADD COLUMN link VARCHAR(255)")
+    con.commit(); con.close()
+  except Exception as e:
+    logger.warning(f"ensure_columns failed: {e}")
+
 with app.app_context():
   db.create_all()
   migrate_txt_to_db()
+  ensure_columns()

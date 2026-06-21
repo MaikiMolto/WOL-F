@@ -29,18 +29,15 @@ function ssSetVisual(sw, state) {
   if (state === 'on') {
     sw.classList.add('on');
     sw.setAttribute('aria-checked', 'true');
-    sw.title = 'Ausschalten (Sleep on LAN)';
     if (label) { label.innerHTML = '&#9679; ' + ssT('online'); label.classList.add('on'); }
     if (dot) { dot.classList.remove('asleep'); dot.classList.add('awake'); }
   } else if (state === 'off') {
     sw.classList.add('off');
     sw.setAttribute('aria-checked', 'false');
-    sw.title = 'Einschalten (Wake on LAN)';
     if (label) { label.innerHTML = '&#9679; ' + ssT('offline'); label.classList.add('off'); }
     if (dot) { dot.classList.remove('awake'); dot.classList.add('asleep'); }
   } else { // 'up' | 'down' -> pending
     sw.classList.add('pending');
-    sw.title = 'schaltet \u2026';
     if (label) {
       label.innerHTML = (state === 'up') ? '&#10227; ' + ssT('up')
                                          : '&#10227; ' + ssT('down');

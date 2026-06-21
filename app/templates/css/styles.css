@@ -306,3 +306,81 @@ html[data-bs-theme="light"] .modal .btn-close{filter:invert(1) grayscale(1) brig
 .wf-sort .dropdown-item{color:var(--wf-text);border-radius:8px;padding:7px 12px;font-size:13.5px}
 .wf-sort .dropdown-item:hover,.wf-sort .dropdown-item.active,.wf-sort .dropdown-item:focus{background:#1a2530;color:var(--wf-accent)}
 #cronSettingsContent .row > div + div{margin-left:12px}
+
+/* clickable type badge -> device web-ui */
+a.wf-typ.wf-link{text-decoration:none;display:inline-flex;align-items:center;gap:3px;cursor:pointer;transition:filter .15s,box-shadow .15s}
+a.wf-typ.wf-link:hover{filter:brightness(1.18);box-shadow:0 0 0 1px rgba(34,211,238,.55)}
+.wf-typ .wf-ext{font-size:10px;opacity:.85;line-height:1}
+
+/* clickable online/offline pills = bulk wake/sleep */
+.wf-pill{cursor:pointer;transition:border-color .15s,box-shadow .15s,filter .15s}
+.wf-pill.on{border-color:rgba(47,179,68,.45)}
+.wf-pill.off{border-color:rgba(224,49,49,.45)}
+.wf-pill.on:hover{border-color:rgba(47,179,68,.85);box-shadow:0 0 0 1px rgba(47,179,68,.35)}
+.wf-pill.off:hover{border-color:rgba(224,49,49,.85);box-shadow:0 0 0 1px rgba(224,49,49,.35)}
+
+/* styled translated tooltips (dark, mono font like IP/MAC, no white box) */
+.tooltip{--bs-tooltip-bg:#0e131a;--bs-tooltip-color:#e8eef4;--bs-tooltip-opacity:1}
+.tooltip-inner{border:1px solid var(--wf-border);border-radius:8px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;padding:5px 9px;box-shadow:0 8px 24px rgba(0,0,0,.55);max-width:240px;letter-spacing:.2px}
+
+/* ===== mobile responsive header (hamburger for secondary controls) ===== */
+.wf-menubtn{display:none;width:38px;height:38px;border-radius:11px;background:#0e131a;border:1px solid var(--wf-border);color:var(--wf-text);cursor:pointer;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.wf-menu{display:contents}
+@media (max-width:820px){
+  body{padding:14px 10px 40px}
+  .wf-topbar{flex-wrap:wrap;gap:8px;padding:10px 12px;position:relative;max-width:100%}
+  .wf-wrap{max-width:100%}
+  .wf-logo{width:38px;height:38px}
+  .wf-bname{font-size:20px}
+  .wf-brand{order:1}
+  .wf-stats{order:2;gap:6px}
+  .wf-pill{padding:6px 9px;font-size:12.5px}
+  .wf-menubtn{display:inline-flex;order:3;margin-left:auto}
+  .wf-search{order:4;flex:1 1 auto;min-width:0}
+  .wf-sort{order:5}
+  .wf-menu{display:none}
+  .wf-menu.open{display:flex;flex-direction:column;gap:10px;align-items:stretch;position:absolute;top:calc(100% + 6px);right:12px;background:#11161d;border:1px solid var(--wf-border);border-radius:12px;padding:12px;box-shadow:0 16px 40px rgba(0,0,0,.55);z-index:1100;min-width:200px}
+  .wf-menu.open .wf-lang{justify-content:center}
+  .wf-menu.open .wf-add,.wf-menu.open .wf-iconbtn{width:100%;justify-content:center;height:40px}
+  .row.row-sortable.wf-grid{grid-template-columns:1fr;gap:14px}
+}
+@media (max-width:430px){ .wf-btag{display:none} }
+
+.wf-menuic{width:22px;height:22px;object-fit:contain}
+.wf-menubtn{font-size:0}
+
+/* ============================================================
+   WOL-F LIGHT MODE (data-bs-theme=light) — echter Hell-Modus
+   ============================================================ */
+html[data-bs-theme="light"]{--wf-border:#d3dae3;--wf-text:#1b2533;--wf-muted:#5c6775}
+html[data-bs-theme="light"] body{background:radial-gradient(ellipse at 50% -12%,#ffffff,#e7edf4 60%);color:#1b2533}
+html[data-bs-theme="light"] .wf-topbar{background:linear-gradient(180deg,#ffffff,#eef2f8);border-color:#d3dae3}
+html[data-bs-theme="light"] .wf-f{color:#1b2533}
+html[data-bs-theme="light"] .wf-btag{color:#7a8696}
+html[data-bs-theme="light"] .wf-pill{background:#ffffff;border-color:#d3dae3;color:#1b2533}
+html[data-bs-theme="light"] .wf-search{background:#ffffff;border-color:#d3dae3}
+html[data-bs-theme="light"] .wf-search .search-input{color:#1b2533}
+html[data-bs-theme="light"] .wf-search .search-input::placeholder{color:#97a1ad}
+html[data-bs-theme="light"] .wf-sort .wf-sortbtn,html[data-bs-theme="light"] .wf-iconbtn,html[data-bs-theme="light"] .wf-menubtn{background:#ffffff;border-color:#d3dae3;color:#5c6775}
+html[data-bs-theme="light"] .wf-lang{border-color:#d3dae3}
+html[data-bs-theme="light"] .wf-lang span{color:#5c6775}
+html[data-bs-theme="light"] .computer-card .card.wf-card{background:linear-gradient(180deg,#ffffff,#f3f6fb);border-color:#d3dae3;color:#1b2533}
+html[data-bs-theme="light"] .wf-cname{color:#1b2533}
+html[data-bs-theme="light"] .wf-info,html[data-bs-theme="light"] .wf-info .sortable{color:#5c6775}
+html[data-bs-theme="light"] .computer-card .card-footer.wf-foot{border-color:#d3dae3}
+html[data-bs-theme="light"] .wf-fb{background:#eef3f9;border-color:#d3dae3}
+html[data-bs-theme="light"] .wf-joblbl{color:#5c6775}
+html[data-bs-theme="light"] .wf-joblbl b{color:#3a4654}
+html[data-bs-theme="light"] .wf-jobsw{background:#cdd5df}
+html[data-bs-theme="light"] .wf-typ{background:#dff3f8;color:#0b7d96}
+html[data-bs-theme="light"] .modal-content{background:linear-gradient(180deg,#ffffff,#f4f7fb);color:#1b2533;border-color:#d3dae3}
+html[data-bs-theme="light"] .modal-title{color:#1b2533}
+html[data-bs-theme="light"] .modal label{color:#5c6775}
+html[data-bs-theme="light"] .modal .form-control,html[data-bs-theme="light"] .modal .form-control-plaintext,html[data-bs-theme="light"] .modal input[type=text]{background:#ffffff;border-color:#d3dae3;color:#1b2533}
+html[data-bs-theme="light"] .modal .btn-secondary{background:#ffffff;border-color:#d3dae3;color:#3a4654}
+html[data-bs-theme="light"] #cronSettingsContent .badge.bg-secondary{background:#dff3f8 !important;color:#0b7d96;border-color:#bfe6ef}
+html[data-bs-theme="light"] #cronSettingsContent .add-button,html[data-bs-theme="light"] #cronSettingsContent .delete-button,html[data-bs-theme="light"] #cronSettingsContent input[type=text]{background:#ffffff}
+html[data-bs-theme="light"] .wf-menu.open{background:#ffffff;border-color:#d3dae3}
+html[data-bs-theme="light"] .wf-sort .dropdown-menu{background:#ffffff;border-color:#d3dae3}
+html[data-bs-theme="light"] .wf-sort .dropdown-item{color:#1b2533}
+html[data-bs-theme="light"] .wf-sort .dropdown-item:hover,html[data-bs-theme="light"] .wf-sort .dropdown-item.active{background:#eef3f8;color:#0b7d96}

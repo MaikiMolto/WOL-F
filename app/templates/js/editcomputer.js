@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var macAddress = button.getAttribute('data-mac-address');
     var ipAddress = button.getAttribute('data-ip-address');
     var testType = button.getAttribute('data-test-type');
+    var devType = button.getAttribute('data-type');
+    var devLink = button.getAttribute('data-link');
 
     // Update the modal's content
     var modalNameInput = editComputerModal.querySelector('#edit_name');
@@ -20,5 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     modalMacAddressInput.value = macAddress;
     modalIpAddressInput.value = ipAddress;
     modalTestTypeInput.value = testType;
+    var et=document.getElementById('edit_type'); if(et) et.value = devType || '';
+    var el=document.getElementById('edit_link'); if(el) el.value = devLink || '';
   });
 });

@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/brands.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/solid.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=5">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=11">
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/updatestatus.js') }}"></script>
     <script>
@@ -48,27 +48,20 @@
       </div>
 
       <div class="wf-stats">
-        <div class="wf-pill on"><span class="wf-d"></span><span id="statOnline">0</span>&nbsp;Online</div>
-        <div class="wf-pill off"><span class="wf-d"></span><span id="statOffline">0</span>&nbsp;Offline</div>
+        <div class="wf-pill on" id="pillOnline" role="button" tabindex="0" data-tipkey="tipOnline" title="Alle online Geräte runterfahren"><span class="wf-d"></span><span id="statOnline">0</span>&nbsp;Online</div>
+        <div class="wf-pill off" id="pillOffline" role="button" tabindex="0" data-tipkey="tipOffline" title="Alle offline Geräte wecken"><span class="wf-d"></span><span id="statOffline">0</span>&nbsp;Offline</div>
       </div>
-
-      {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
-      <div class="wf-allbtns">
-        <button type="button" class="wf-allbtn wake" id="wakeAllBtn"><span class="wf-ar">&#8593;</span> <span data-i18n="wakeAll">Alle wecken</span></button>
-        <button type="button" class="wf-allbtn sleep" id="sleepAllBtn"><span class="wf-ar">&#8595;</span> <span data-i18n="sleepAll">Alle schlafen</span></button>
-      </div>
-      {% endif -%}
 
       <div class="wf-sp"></div>
 
       <div class="wf-search">
         <img src="{{ url_for('static', filename='images/wol-f/search.png') }}" class="wf-searchic" alt="">
         <input type="text" class="search-input" data-i18n-ph="searchPh" placeholder="Suche Name, MAC, IP" value="">
-        <button type="button" class="wf-clear" onclick="clearSearchInput()" title="Clear"><i class="fa-solid fa-xmark"></i></button>
+        <button type="button" class="wf-clear" onclick="clearSearchInput()" data-tipkey="tipClear" title="Clear"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <div class="btn-group wf-sort">
-        <button class="btn wf-sortbtn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" title="Sort">
+        <button class="btn wf-sortbtn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" data-tipkey="tipSort" title="Sort">
           <img src="{{ url_for('static', filename='images/wol-f/sort.png') }}" class="wf-sortic" alt="Sort">
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
@@ -78,23 +71,26 @@
         </ul>
       </div>
 
+      <button type="button" class="wf-menubtn" id="wfMenuBtn" aria-label="Menu"><img src="{{ url_for('static', filename='images/wol-f/menu.png') }}" class="wf-menuic" alt="Menu"></button>
+      <div class="wf-menu" id="wfMenu">
       <div class="wf-lang"><span class="active" data-lang="de">DE</span><span data-lang="en">EN</span></div>
 
-      <button type="button" class="wf-iconbtn" id="darkModeBtn" title="Switch between light and dark mode" aria-label="Dark mode">
+      <button type="button" class="wf-iconbtn" id="darkModeBtn" data-tipkey="tipTheme" title="Switch between light and dark mode" aria-label="Dark mode">
         <img class="wf-mode-icon wf-mode-dark" src="{{ url_for('static', filename='images/wol-f/darkmode.png') }}" alt="Dark mode">
         <img class="wf-mode-icon wf-mode-light" src="{{ url_for('static', filename='images/wol-f/whitemode.png') }}" alt="Light mode">
         <input class="form-check-input wf-hidden-check" type="checkbox" id="darkModeSwitch" checked aria-label="Switch between light and dark mode">
       </button>
 
       {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
-      <button type="button" class="wf-add" data-bs-toggle="modal" data-bs-target="#addComputer" aria-label="AddComputer">+ <span data-i18n="addDevice">Gerät</span></button>
+      <button type="button" class="wf-add" data-tipkey="tipAdd" data-bs-toggle="modal" data-bs-target="#addComputer" aria-label="AddComputer">+ <span data-i18n="addDevice">Gerät</span></button>
       {% endif -%}
 
-      <a class="wf-iconbtn" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal" aria-label="About" title="About"><i class="fa-solid fa-info-circle"></i></a>
+      <a class="wf-iconbtn" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal" aria-label="About" data-tipkey="tipAbout" title="About"><i class="fa-solid fa-info-circle"></i></a>
 
       {% if os.environ.get('ENABLE_LOGIN') == 'true' or os.environ.get('OIDC_ENABLED') == 'true' -%}
       <a class="wf-iconbtn danger" href="{{ url_for('logout') }}" aria-label="Logout" title="Logout"><i class="fa-solid fa-sign-out"></i></a>
       {% endif -%}
+      </div>
     </header>
 
     <!-- ===================== Toasts (unchanged) ===================== -->
@@ -125,7 +121,7 @@
             <div class="card-body wf-cbody">
               <div class="title-sortable wf-ch">
                 <div class="smart-switch-wrap">
-                  <button type="button" class="smart-switch off" role="switch" aria-checked="false"
+                  <button type="button" class="smart-switch off" role="switch" aria-checked="false" data-tipkey="tipToggle"
                           data-mac-address="{{ computer.mac_address }}"
                           data-ip-address="{{ computer.ip_address }}"
                           data-test-type="{{ computer.test_type }}">
@@ -133,7 +129,13 @@
                   </button>
                   <span class="smart-status off">&#9679; Offline</span>
                 </div>
-                <div class="sortable wf-cname">{{ computer.name }}</div>
+                <div class="wf-cname">
+                  <span class="sortable">{{ computer.name }}</span>
+                  {% if computer.type and computer.link -%}<a class="wf-typ wf-link" href="{{ computer.link }}" target="_blank" rel="noopener" data-tipkey="tipWebui" title="Web-UI">{{ computer.type }}<span class="wf-ext">&#8599;</span></a>
+                  {% elif computer.type -%}<span class="wf-typ">{{ computer.type }}</span>
+                  {% elif computer.link -%}<a class="wf-typ wf-link" href="{{ computer.link }}" target="_blank" rel="noopener" data-tipkey="tipWebui" title="Web-UI">Web-UI<span class="wf-ext">&#8599;</span></a>
+                  {% endif -%}
+                </div>
               </div>
 
               <div class="info-sortable wf-info">
@@ -161,13 +163,13 @@
               {% endif -%}
 
               <div class="wf-fbtns">
-                <button type="button" class="wf-fb" title="Configure Cron" data-bs-toggle="modal" data-bs-target="#cronSettingsModal" onclick="loadCronSettings('{{ computer.name }}', '{{ computer.cron_wol_schedule }}', '{{ computer.cron_sol_schedule }}', '{{ computer.mac_address }}')">
+                <button type="button" class="wf-fb" data-tipkey="tipCron" title="Configure Cron" data-bs-toggle="modal" data-bs-target="#cronSettingsModal" onclick="loadCronSettings('{{ computer.name }}', '{{ computer.cron_wol_schedule }}', '{{ computer.cron_sol_schedule }}', '{{ computer.mac_address }}')">
                   <img src="{{ url_for('static', filename='images/wol-f/timer.png') }}" alt="Cron">
                 </button>
-                <button type="button" class="wf-fb" title="Edit computer" data-bs-toggle="modal" data-bs-target="#editComputer" data-name="{{ computer.name }}" data-mac-address="{{ computer.mac_address }}" data-ip-address="{{ computer.ip_address }}" data-test-type="{{ computer.test_type }}">
+                <button type="button" class="wf-fb" data-tipkey="tipEdit" title="Edit computer" data-bs-toggle="modal" data-bs-target="#editComputer" data-name="{{ computer.name }}" data-mac-address="{{ computer.mac_address }}" data-ip-address="{{ computer.ip_address }}" data-test-type="{{ computer.test_type }}" data-type="{{ computer.type or '' }}" data-link="{{ computer.link or '' }}">
                   <img src="{{ url_for('static', filename='images/wol-f/edit.png') }}" alt="Edit">
                 </button>
-                <button type="button" class="wf-fb danger" title="Delete computer" data-bs-toggle="modal" data-bs-target="#staticDelete" onclick="setDeleteForm('{{ url_for('delete_computer') }}', 'mac_address', '{{ computer.mac_address }}', 'Computer {{ computer.name }}')">
+                <button type="button" class="wf-fb danger" data-tipkey="tipTrash" title="Delete computer" data-bs-toggle="modal" data-bs-target="#staticDelete" onclick="setDeleteForm('{{ url_for('delete_computer') }}', 'mac_address', '{{ computer.mac_address }}', 'Computer {{ computer.name }}')">
                   <img src="{{ url_for('static', filename='images/wol-f/trash.png') }}" alt="Delete">
                 </button>
               </div>
@@ -206,6 +208,14 @@
               <label for="test_type">Status Check:</label>
               <input type="text" class="form-control" name="test_type" id="test_type" placeholder="icmp, arp or port number" required>
             </div>
+            <div class="form-group">
+              <label for="type">Gerätetyp (optional):</label>
+              <input type="text" class="form-control" name="type" id="type" placeholder="z.B. SRV, NAS, PC" maxlength="16">
+            </div>
+            <div class="form-group">
+              <label for="link">Web-UI Link (optional):</label>
+              <input type="text" class="form-control" name="link" id="link" placeholder="http://192.168.0.1:8006">
+            </div>
           </div>
           <div class="modal-footer">
                 <button class="btn btn-primary" id="arpScanButton" data-bs-target="#arpScan" data-bs-toggle="modal" data-bs-dismiss="modal">Scan Network</button>
@@ -241,6 +251,14 @@
               <div class="form-group">
                 <label for="test_type">Status Check:</label>
                 <input type="text" class="form-control" name="test_type" id="edit_test_type" placeholder="icmp or port number" required>
+              </div>
+              <div class="form-group">
+                <label for="type">Gerätetyp (optional):</label>
+                <input type="text" class="form-control" name="type" id="edit_type" placeholder="z.B. SRV, NAS, PC" maxlength="16">
+              </div>
+              <div class="form-group">
+                <label for="link">Web-UI Link (optional):</label>
+                <input type="text" class="form-control" name="link" id="edit_link" placeholder="http://192.168.0.1:8006">
               </div>
           </div>
           <div class="modal-footer">
@@ -377,19 +395,26 @@
           if(!sws.length||!confirmInst) return;
           var en=getLang()==="en";
           document.getElementById("wfConfirmTitle").textContent = en?"Confirm":"Best\u00e4tigen";
+          var n=sws.length;
           document.getElementById("wfConfirmBody").textContent = en
-            ? (kind==="wake"?"Wake ":"Sleep ")+sws.length+(sws.length===1?" device?":" devices?")
-            : (kind==="wake"?"Alle "+sws.length+" Ger\u00e4te wecken?":"Alle "+sws.length+" Ger\u00e4te schlafen legen?");
+            ? (kind==="wake"?"Wake ":"Shut down ")+n+(n===1?" device?":" devices?")
+            : n+" "+(n===1?"Ger\u00e4t":"Ger\u00e4te")+(kind==="wake"?" wecken?":" runterfahren?");
           document.getElementById("wfConfirmCancel").textContent = en?"Cancel":"Abbrechen";
           var ok=document.getElementById("wfConfirmOk"); ok.textContent=en?"Confirm":"Best\u00e4tigen"; ok.className="btn "+(kind==="wake"?"btn-success":"btn-danger");
           pendingBulk=sws; confirmInst.show();
         }
         var okBtn=document.getElementById("wfConfirmOk");
         if(okBtn) okBtn.addEventListener("click",function(){ if(confirmInst)confirmInst.hide(); (pendingBulk||[]).forEach(function(sw){sw.click();}); pendingBulk=null; });
-        var wa=document.getElementById("wakeAllBtn"), sa=document.getElementById("sleepAllBtn");
-        if(wa) wa.addEventListener("click",function(){ wfBulk(".smart-switch.off","wake"); });
-        if(sa) sa.addEventListener("click",function(){ wfBulk(".smart-switch.on","sleep"); });
+        var pOn=document.getElementById("pillOnline"), pOff=document.getElementById("pillOffline");
+        if(pOn) pOn.addEventListener("click",function(){ wfBulk(".smart-switch.on","sleep"); });
+        if(pOff) pOff.addEventListener("click",function(){ wfBulk(".smart-switch.off","wake"); });
+        var tipDict={
+          de:{tipOnline:"Alle online Geräte runterfahren",tipOffline:"Alle offline Geräte wecken",tipCron:"Zeitplan (Cron) einrichten",tipEdit:"Gerät bearbeiten",tipTrash:"Gerät löschen",tipSort:"Sortieren",tipTheme:"Hell-/Dunkelmodus",tipAdd:"Neues Gerät hinzufügen",tipAbout:"Über WOL-F",tipClear:"Suche löschen",tipWebui:"Web-UI öffnen",tipToggle:"Klicken zum Schalten"},
+          en:{tipOnline:"Shut down all online devices",tipOffline:"Wake all offline devices",tipCron:"Configure schedule (cron)",tipEdit:"Edit device",tipTrash:"Delete device",tipSort:"Sort",tipTheme:"Light/Dark mode",tipAdd:"Add new device",tipAbout:"About WOL-F",tipClear:"Clear search",tipWebui:"Open web UI",tipToggle:"Click to toggle"}
+        };
+        function wfApplyTips(lang){ if(!window.bootstrap) return; var d=tipDict[lang]||tipDict.de; document.querySelectorAll("[data-tipkey]").forEach(function(el){ var txt=d[el.getAttribute("data-tipkey")]; if(!txt) return; var old=bootstrap.Tooltip.getInstance(el); if(old) old.dispose(); el.setAttribute("title",txt); new bootstrap.Tooltip(el,{trigger:"hover focus",placement: el.closest(".card")?"top":"bottom"}); }); }
         function wfSetLang(lang){ var d=dict[lang]; if(!d) return;
+          wfApplyTips(lang);
           document.querySelectorAll("[data-i18n]").forEach(function(el){ var k=el.getAttribute("data-i18n"); if(d[k]!=null) el.textContent=d[k]; });
           document.querySelectorAll("[data-i18n-ph]").forEach(function(el){ var k=el.getAttribute("data-i18n-ph"); if(d[k]!=null) el.setAttribute("placeholder",d[k]); });
           document.querySelectorAll(".wf-lang span").forEach(function(sp){ sp.classList.toggle("active", sp.getAttribute("data-lang")===lang); });
@@ -398,6 +423,8 @@
         }
         window.wfSetLang=wfSetLang;
         document.querySelectorAll(".wf-lang span").forEach(function(sp){ sp.addEventListener("click",function(){ wfSetLang(sp.getAttribute("data-lang")); }); });
+        var mb=document.getElementById("wfMenuBtn"), mn=document.getElementById("wfMenu");
+        if(mb&&mn){ mb.addEventListener("click",function(e){ e.stopPropagation(); mn.classList.toggle("open"); }); document.addEventListener("click",function(e){ if(mn.classList.contains("open") && !mn.contains(e.target) && e.target!==mb){ mn.classList.remove("open"); } }); }
         wfSetLang(getLang());
       })();
     </script>

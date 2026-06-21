@@ -430,3 +430,11 @@ html[data-bs-theme="light"] .wf-jobsw.aktiv{background:#2fb344}
 .wf-pill-ok:hover{filter:brightness(1.12)}
 .wf-pill-danger{background:linear-gradient(180deg,#e03131,#bd2626);border-color:#e03131;color:#fff}
 .wf-pill-danger:hover{filter:brightness(1.12)}
+
+/* === manual time entry + am/pm toggle === */
+.wf-time-num{width:62px;background:#141b24;border:1px solid var(--wf-border);color:var(--wf-text);border-radius:10px;padding:7px 10px;font-size:15px;font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace;text-align:center}
+.wf-time-num:focus{outline:none;border-color:var(--wf-accent);box-shadow:0 0 0 3px rgba(34,211,238,.18)}
+.wf-time-colon{font-size:18px;font-weight:800;color:var(--wf-muted)}
+.wf-ampm{display:inline-flex;border:1px solid var(--wf-border);border-radius:10px;overflow:hidden;margin-left:8px}
+.wf-ampm-btn{padding:7px 13px;background:#141b24;border:none;color:var(--wf-muted);font-size:13px;font-weight:800;cursor:pointer}
+.wf-ampm-btn.active{background:var(--wf-accent);color:#04222a}

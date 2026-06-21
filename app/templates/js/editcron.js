@@ -25,6 +25,14 @@
   function tr(k) { var l = lang(); return (T[l] && T[l][k]) || (T.de[k]) || k; }
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function fmtTime(h, m, l) {
+    if (l === 'en') {
+      var ap = h < 12 ? 'AM' : 'PM';
+      var h12 = h % 12; if (h12 === 0) h12 = 12;
+      return h12 + ':' + pad(m) + ' ' + ap;
+    }
+    return pad(h) + ':' + pad(m);
+  }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -70,17 +78,27 @@
   function prettySchedule(cron) {
     var p = parseCron(cron);
     if (!p) return esc(cron); // expert cron -> show raw
-    return daysToLabel(p.days) + ' \u00b7 ' + pad(p.hour) + ':' + pad(p.minute);
+    return daysToLabel(p.days) + ' \u00b7 ' + fmtTime(p.hour, p.minute, lang());
   }
 
   // Build the cron string from the current UI state of a section.
   function buildCron(prefix) {
     var days = [].slice.call(document.querySelectorAll('#' + prefix + '-days .wf-day.active'))
       .map(function (b) { return parseInt(b.getAttribute('data-day'), 10); });
-    var time = (document.getElementById(prefix + '-time') || {}).value || '';
-    var tm = time.match(/^(\d{1,2}):(\d{2})$/);
-    if (!days.length || !tm) return null;
-    var hour = parseInt(tm[1], 10), minute = parseInt(tm[2], 10);
+    var hhEl = document.getElementById(prefix + '-hh'), mmEl = document.getElementById(prefix + '-mm');
+    var hhv = hhEl ? hhEl.value.trim() : '', mmv = mmEl ? mmEl.value.trim() : '';
+    if (!days.length || hhv === '' || mmv === '') return null;
+    var hour = parseInt(hhv, 10), minute = parseInt(mmv, 10);
+    if (isNaN(hour) || isNaN(minute) || minute < 0 || minute > 59) return null;
+    if (lang() === 'en') {
+      if (hour < 1 || hour > 12) return null;
+      var apEl = document.getElementById(prefix + '-ampm');
+      var ap = apEl ? apEl.getAttribute('data-ampm') : 'AM';
+      if (ap === 'PM') hour = (hour === 12 ? 12 : hour + 12);
+      else hour = (hour === 12 ? 0 : hour);
+    } else {
+      if (hour < 0 || hour > 23) return null;
+    }
     var ordered = WEEK_ORDER.filter(function (d) { return days.indexOf(d) !== -1; });
     var dow;
     if (ordered.length === 7) dow = '*';
@@ -104,7 +122,23 @@
       var on = pre && pre.days[d] ? ' active' : '';
       return '<button type="button" class="wf-day' + on + '" data-day="' + d + '">' + L[d] + '</button>';
     }).join('');
-    var timeVal = pre ? (pad(pre.hour) + ':' + pad(pre.minute)) : '';
+    var l = lang();
+    var hhVal = '', mmVal = '', ampmVal = 'AM';
+    if (pre) {
+      mmVal = pad(pre.minute);
+      if (l === 'en') {
+        ampmVal = pre.hour < 12 ? 'AM' : 'PM';
+        var h12v = pre.hour % 12; if (h12v === 0) h12v = 12;
+        hhVal = String(h12v);
+      } else { hhVal = pad(pre.hour); }
+    }
+    var hhMin = l === 'en' ? 1 : 0, hhMax = l === 'en' ? 12 : 23;
+    var ampmToggle = l === 'en'
+      ? '<div class="wf-ampm" id="' + prefix + '-ampm" data-ampm="' + ampmVal + '">'
+        + '<button type="button" class="wf-ampm-btn' + (ampmVal === 'AM' ? ' active' : '') + '" data-ap="AM">AM</button>'
+        + '<button type="button" class="wf-ampm-btn' + (ampmVal === 'PM' ? ' active' : '') + '" data-ap="PM">PM</button>'
+        + '</div>'
+      : '';
 
     var cur = '';
     if (currentCron) {
@@ -132,7 +166,10 @@
       '  <div class="wf-days" id="' + prefix + '-days">' + dayBtns + '</div>' +
       '  <div class="wf-time-row">' +
       '    <label class="wf-cron-lbl">' + esc(tr('time')) + '</label>' +
-      '    <input type="time" class="wf-time-input" id="' + prefix + '-time" value="' + timeVal + '">' +
+      '    <input type="number" inputmode="numeric" class="wf-time-num" id="' + prefix + '-hh" min="' + hhMin + '" max="' + hhMax + '" placeholder="HH" value="' + hhVal + '">' +
+      '    <span class="wf-time-colon">:</span>' +
+      '    <input type="number" inputmode="numeric" class="wf-time-num" id="' + prefix + '-mm" min="0" max="59" placeholder="MM" value="' + mmVal + '">' +
+      ampmToggle +
       '  </div>' +
       '  <div class="wf-cron-foot">' +
       '    <span class="wf-cron-preview-lbl">' + esc(tr('preview')) + ':</span> ' +
@@ -183,6 +220,16 @@
       updatePreview(sec2.id);
       return;
     }
+    var apb = e.target.closest && e.target.closest('.wf-ampm-btn');
+    if (apb) {
+      var apw = apb.closest('.wf-ampm');
+      if (apw) {
+        apw.setAttribute('data-ampm', apb.getAttribute('data-ap'));
+        [].slice.call(apw.querySelectorAll('.wf-ampm-btn')).forEach(function (b) { b.classList.toggle('active', b === apb); });
+        var apsec = apb.closest('.wf-cron-sec'); if (apsec) updatePreview(apsec.id);
+      }
+      return;
+    }
     var act = e.target.closest && e.target.closest('.wf-cron-actbtn');
     if (act) {
       if (act.getAttribute('data-act') === 'del') wfDeleteCron(act.getAttribute('data-mac'), act.getAttribute('data-type'));
@@ -191,8 +238,8 @@
     }
   });
 
-  document.addEventListener('change', function (e) {
-    if (e.target && e.target.classList && e.target.classList.contains('wf-time-input')) {
+  document.addEventListener('input', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('wf-time-num')) {
       var sec = e.target.closest('.wf-cron-sec');
       if (sec) updatePreview(sec.id);
     }

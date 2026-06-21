@@ -134,3 +134,23 @@
 .smart-status.off { color: #e03131; }
 .smart-status.pending { color: #f59f00; }
 .smart-status.timeout { color: #f59f00; }
+
+/* farbiger Status-Streifen links an der Kachel (folgt dem Switch-Status) */
+.computer-card .card { position: relative; }
+.computer-card .card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #e03131; /* default: off */
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
+  transition: background 0.35s;
+  pointer-events: none;
+  z-index: 2;
+}
+.computer-card .card:has(.smart-switch.on)::before      { background: #2fb344; }
+.computer-card .card:has(.smart-switch.pending)::before  { background: #f59f00; }
+.computer-card .card:has(.smart-switch.off)::before      { background: #e03131; }

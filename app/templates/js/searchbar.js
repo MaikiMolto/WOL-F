@@ -1,13 +1,22 @@
+function wfCardData(card) {
+  const sw = card.querySelector('.wf-switch');
+  const nameEl = card.querySelector('.title-sortable .sortable');
+  return {
+    name: (nameEl ? nameEl.textContent : '').trim(),
+    ip: sw ? (sw.dataset.ipAddress || '') : '',
+    mac: sw ? (sw.dataset.macAddress || '') : ''
+  };
+}
+
 function filterComputers() {
   const query = document.querySelector('.search-input').value.toLowerCase();
   const cards = document.querySelectorAll('.computer-card');
 
   cards.forEach(card => {
-    const title = card.querySelector('.title-sortable .sortable').textContent.toLowerCase();
-    const ip = card.querySelector('.info-sortable .sortable:nth-of-type(1)').textContent.toLowerCase(); // IP address
-    const mac = card.querySelector('.info-sortable .sortable:nth-of-type(2)').textContent.toLowerCase(); // MAC address
-
-    if (title.includes(query) || ip.includes(query) || mac.includes(query)) {
+    const d = wfCardData(card);
+    if (d.name.toLowerCase().includes(query) ||
+        d.ip.toLowerCase().includes(query) ||
+        d.mac.toLowerCase().includes(query)) {
       card.classList.remove('hidden'); // Show card
     } else {
       card.classList.add('hidden'); // Hide card
@@ -25,7 +34,10 @@ function clearSearchInput() {
 }
 
 function ipToNumber(ip) {
-  return ip.split('.').reduce((acc, octet) => (acc << 8) + Number(octet), 0);
+  const parts = String(ip).split('.');
+  if (parts.length !== 4) return 0;
+  // Use *256 (not <<8) to avoid 32-bit signed overflow for IPs > 127.x
+  return parts.reduce((acc, octet) => (acc * 256) + (Number(octet) || 0), 0);
 }
 
 function sortComputers(criteria) {
@@ -34,40 +46,30 @@ function sortComputers(criteria) {
 
   // Update the active class in the dropdown
   const dropdownItems = document.querySelectorAll('.dropdown-item');
-  dropdownItems.forEach(item => {
-    item.classList.remove('active'); // Remove active class from all items
-  });
+  dropdownItems.forEach(item => item.classList.remove('active'));
 
-  // Sort the cards based on the selected criteria
+  // Sort the cards based on the selected criteria (raw values from data-*)
   cards.sort((a, b) => {
-    let aValue, bValue;
+    const da = wfCardData(a);
+    const db = wfCardData(b);
 
     switch (criteria) {
       case 'name':
-        aValue = a.querySelector('.title-sortable .sortable').textContent.toLowerCase();
-        bValue = b.querySelector('.title-sortable .sortable').textContent.toLowerCase();
-        dropdownItems[0].classList.add('active'); // Sort by Name
-        return aValue.localeCompare(bValue); // Compare values for sorting
+        if (dropdownItems[0]) dropdownItems[0].classList.add('active');
+        return da.name.toLowerCase().localeCompare(db.name.toLowerCase());
 
       case 'ip':
-        const aIp = a.querySelector('.info-sortable .sortable:nth-of-type(1)').textContent;
-        const bIp = b.querySelector('.info-sortable .sortable:nth-of-type(1)').textContent;
-        dropdownItems[1].classList.add('active'); // Sort by IP
-
-        return ipToNumber(aIp) - ipToNumber(bIp); // Compare numeric values
+        if (dropdownItems[1]) dropdownItems[1].classList.add('active');
+        return ipToNumber(da.ip) - ipToNumber(db.ip);
 
       case 'mac':
-        aValue = a.querySelector('.info-sortable .sortable:nth-of-type(2)').textContent.toLowerCase(); // MAC address
-        bValue = b.querySelector('.info-sortable .sortable:nth-of-type(2)').textContent.toLowerCase(); // MAC address
-        dropdownItems[2].classList.add('active'); // Sort by MAC
-        return aValue.localeCompare(bValue); // Compare values for sorting
+        if (dropdownItems[2]) dropdownItems[2].classList.add('active');
+        return da.mac.toLowerCase().localeCompare(db.mac.toLowerCase());
     }
+    return 0;
   });
 
   // Clear the current cards and append sorted cards
   cardsContainer.innerHTML = '';
   cards.forEach(card => cardsContainer.appendChild(card));
 }
-
-// Attach the filter function to the input event
-document.querySelector('.search-input').addEventListener('input', filterComputers);

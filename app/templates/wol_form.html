@@ -29,11 +29,7 @@
         setInterval(() => {
           // Update the status of all computers (smart switches)
           if (window.refreshAllSwitches) window.refreshAllSwitches();
-        {% if os.environ.get('REFRESH_INTERVAL') -%}
-        }, {{ os.environ.get('REFRESH_INTERVAL') | int * 1000 }});
-        {% else -%}
-        }, 30000);
-        {% endif -%}
+        }, {{ [(os.environ.get('REFRESH_INTERVAL', '30') | int), 5] | max * 1000 }});
       {% endif -%}
     </script>
   </head>
@@ -353,13 +349,13 @@
 
     {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
     <script src="{{ url_for('static', filename='js/editcomputer.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/editcron.js') }}?v=12"></script>
+    <script src="{{ url_for('static', filename='js/editcron.js') }}?v=13"></script>
     <script src="{{ url_for('static', filename='js/delcomputer.js') }}"></script>
     {% endif -%}
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/arpscan.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/searchbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/searchbar.js') }}?v=1"></script>
 
     <!-- ===================== WOL-F UI enhancements (additive) ===================== -->
     <div class="modal fade" id="wfConfirmModal" tabindex="-1" aria-hidden="true">

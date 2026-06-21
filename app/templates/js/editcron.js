@@ -1,80 +1,62 @@
-function ecT(de,en){ try { return (window.wfGetLang && window.wfGetLang()==="en") ? en : de; } catch(e){ return de; } }
+function loadCronSettings(macAddress, deviceName, wolSchedule, solSchedule) {
+  const content = document.getElementById('cronSettingsContent');
+  const lang = (window.wfGetLang && window.wfGetLang()) || 'de';
+  const t = (window.wfCronTexts && window.wfCronTexts[lang]) || {};
 
-function loadCronSettings(computerName, wolSchedule, solSchedule, macAddress) {
-  const header = `<h5 class="text-primary">${computerName} (${macAddress})</h5>`;
+  function ecT(key, fallback) {
+    return (t && t[key]) || fallback;
+  }
 
-  const helpSection = `
-    <hr>
-    <div>
-      <div><strong>${ecT("Hilfe:","Help:")}</strong></div>
-      <div>- <a class="text-decoration-none" href="https://crontab.guru/" target="_blank" rel="noopener noreferrer">${ecT("Cron-Eintrag erzeugen","Generate cron entry")}</a></div>
-      <div>- <a class="text-decoration-none" href="https://github.com/Misterbabou/gptwol#configure-sleep-on-lan" target="_blank" rel="noopener noreferrer">${ecT("Sleep on LAN einrichten","Configure Sleep on Lan")}</a></div>
-    </div>
-    `;
+  // HTML-escape dynamic values before injecting via innerHTML (XSS guard).
+  function ecEsc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
 
-  const wolContent = wolSchedule ? `
-    <div class="row align-items-center g-0">
-      <div class="col-md-auto w-auto">${ecT("Wecken-Cron:","Wake cron:")} <span class="badge bg-secondary rounded-pill fs-6">${wolSchedule}</span></div>
-      <div class="col-md-auto w-auto">
-        <button class="delete-button" type="button" title="Delete Wake Cron" onclick="deleteCron('${macAddress}', 'wol')">
-          <i class="fa-regular fa-trash-can"></i>
-        </button>
-      </div>
-    </div>` : `
-    <div class="row align-items-center g-0">
-      <div class="col-md-auto w-auto">${ecT("Wecken-Cron:","Wake cron:")}</div>
-      <div class="col-md-auto w-auto">
-        <form method="POST" action="${add_wol_cron_url}">
-          <input type="hidden" name="mac_address" value="${macAddress}">
-          <input class="pt-1" type="text" name="cron_request" placeholder="0 12 * * *" required>
-          <button class="add-button" type="submit" title="Add Cron">
-            <i class="fa-solid fa-plus"></i>
-          </button>
-        </form>
-      </div>
-    </div>`;
+  const macSafe = ecEsc(macAddress);
 
-  const solContent = solSchedule ? `
-    <div class="row align-items-center g-0">
-      <div class="col-md-auto w-auto">${ecT("Schlafen-Cron:","Sleep cron:")} <span class="badge bg-secondary rounded-pill fs-6">${solSchedule}</span></div>
-      <div class="col-md-auto w-auto">
-        <button class="delete-button" type="button" title="Delete Sleep Cron" onclick="deleteCron('${macAddress}', 'sol')">
-          <i class="fa-regular fa-trash-can"></i>
-        </button>
-      </div>
-    </div>` : `
-    <div class="row align-items-center g-0">
-      <div class="col-md-auto w-auto">${ecT("Schlafen-Cron:","Sleep cron:")}</div>
-      <div class="col-md-auto w-auto">
-        <form method="POST" action="${add_sol_cron_url}">
-          <input type="hidden" name="mac_address" value="${macAddress}">
-          <input class="pt-1" type="text" name="cron_request" placeholder="0 12 * * *" required>
-          <button class="add-button" type="submit" title="Add Cron">
-            <i class="fa-solid fa-plus"></i>
-          </button>
-        </form>
-      </div>
-    </div>`;
+  let html = '';
+  html += '<div class="wf-cron-device">' + ecEsc(deviceName) + '</div>';
+  html += '<input type="hidden" id="cronMacAddress" value="' + macSafe + '">';
 
-  const content = header + wolContent + solContent + helpSection;
+  // WOL Section
+  html += '<div class="wf-cron-section">';
+  html += '<div class="wf-cron-row">';
+  html += '<span class="wf-cron-label">' + ecT('wolSchedule', 'WOL Zeitplan') + '</span>';
+  if (wolSchedule) {
+    html += '<span class="wf-cron-current">' + ecEsc(wolSchedule) + '</span>';
+    html += '<button class="wf-pill wf-pill-danger wf-pill-sm" onclick="deleteCron(\'' + macSafe + '\', \'wol\')">' + ecT('delete', 'Löschen') + '</button>';
+  } else {
+    html += '<span class="wf-cron-none">' + ecT('noSchedule', 'Kein Zeitplan') + '</span>';
+  }
+  html += '</div>';
 
-  document.getElementById('cronSettingsContent').innerHTML = content;
-}
+  // WOL add form
+  html += '<div class="wf-cron-add">';
+  html += '<input type="text" id="wolCronInput" class="wf-cron-input" placeholder="' + ecT('cronPlaceholder', '0 8 * * 1-5') + '">';
+  html += '<button class="wf-pill wf-pill-accent wf-pill-sm" onclick="addCron(\'' + macSafe + '\', \'wol\')">' + ecT('add', 'Hinzufügen') + '</button>';
+  html += '</div>';
+  html += '</div>';
 
-function deleteCron(macAddress, type) {
-  const url = type === 'wol' ? delete_wol_cron_url : delete_sol_cron_url;
+  // SOL Section
+  html += '<div class="wf-cron-section">';
+  html += '<div class="wf-cron-row">';
+  html += '<span class="wf-cron-label">' + ecT('solSchedule', 'SOL Zeitplan') + '</span>';
+  if (solSchedule) {
+    html += '<span class="wf-cron-current">' + ecEsc(solSchedule) + '</span>';
+    html += '<button class="wf-pill wf-pill-danger wf-pill-sm" onclick="deleteCron(\'' + macSafe + '\', \'sol\')">' + ecT('delete', 'Löschen') + '</button>';
+  } else {
+    html += '<span class="wf-cron-none">' + ecT('noSchedule', 'Kein Zeitplan') + '</span>';
+  }
+  html += '</div>';
 
-  // Create a form to submit the delete request
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = url;
+  // SOL add form
+  html += '<div class="wf-cron-add">';
+  html += '<input type="text" id="solCronInput" class="wf-cron-input" placeholder="' + ecT('cronPlaceholder', '0 23 * * *') + '">';
+  html += '<button class="wf-pill wf-pill-accent wf-pill-sm" onclick="addCron(\'' + macSafe + '\', \'sol\')">' + ecT('add', 'Hinzufügen') + '</button>';
+  html += '</div>';
+  html += '</div>';
 
-  const input = document.createElement('input');
-  input.type = 'hidden';
-  input.name = 'mac_address';
-  input.value = macAddress;
-
-  form.appendChild(input);
-  document.body.appendChild(form);
-  form.submit();
+  content.innerHTML = html;
 }

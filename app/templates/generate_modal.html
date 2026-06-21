@@ -23,7 +23,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            {{ message_content|safe }}
+            {% for m in messages %}<p>{{ m }}</p>{% endfor %}
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" id="closeModalButton">Close</button>

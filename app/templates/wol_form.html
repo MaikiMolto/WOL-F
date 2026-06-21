@@ -21,17 +21,12 @@
       const add_sol_cron_url = "{{ url_for('add_sol_cron') }}"
       const delete_wol_cron_url = "{{ url_for('delete_wol_cron') }}"
       const delete_sol_cron_url = "{{ url_for('delete_sol_cron') }}"
+      const wol_or_sol_send_url = "{{ url_for('wol_or_sol_send') }}";
 
       {% if os.environ.get('ENABLE_REFRESH') != 'false' -%}
         setInterval(() => {
-          // Update the status of all computers
-          for (let element of document.getElementsByClassName('status-indicator')) {
-            const ip_address = element.getAttribute('data-ip-address');
-            const test_type = element.getAttribute('data-test-type');
-            // Find the corresponding button element
-            const buttonElement = element.closest('.card').querySelector('.status-power');
-            updateStatus(ip_address, test_type, element, buttonElement);
-          }
+          // Update the status of all computers (smart switches)
+          if (window.refreshAllSwitches) window.refreshAllSwitches();
         {% if os.environ.get('REFRESH_INTERVAL') -%}
         }, {{ os.environ.get('REFRESH_INTERVAL') | int * 1000 }});
         {% else -%}
@@ -134,12 +129,15 @@
             <div class="card-body d-flex flex-column flex-grow-1">
               <div class="title-sortable row justify-content-start p-1">
                 <div class="col-auto">
-                  <form method="POST" action="{{ url_for('wol_or_sol_send') }}">
-                    <input type="hidden" name="mac_address" value="{{ computer.mac_address }}">
-                    <button type="submit" class="btn btn-success btn-circle btn-xl status-power">
-                      <i class="fa-solid fa-power-off"></i>
+                  <div class="smart-switch-wrap">
+                    <button type="button" class="smart-switch off" role="switch" aria-checked="false"
+                            data-mac-address="{{ computer.mac_address }}"
+                            data-ip-address="{{ computer.ip_address }}"
+                            data-test-type="{{ computer.test_type }}">
+                      <span class="smart-knob"></span>
                     </button>
-                  </form>
+                    <span class="smart-status off">&#9679; Offline</span>
+                  </div>
                 </div>
                 <div class="col-auto px-0 my-auto">
                   <div class="sortable fs-4">{{ computer.name }}</div>

@@ -62,3 +62,75 @@
   line-height: 1.33;
   border-radius: 25px;
 }
+
+/* ===== Smart Switch (replaces power button) ===== */
+.smart-switch-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.smart-switch {
+  width: 62px;
+  height: 32px;
+  border-radius: 18px;
+  border: none;
+  padding: 0;
+  position: relative;
+  cursor: pointer;
+  background: #e03131;
+  box-shadow: 0 0 12px 1px rgba(224, 49, 49, 0.40);
+  transition: background 0.35s, box-shadow 0.35s;
+  flex-shrink: 0;
+}
+.smart-switch:hover { filter: brightness(1.08); }
+.smart-switch .smart-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  transition: left 0.32s cubic-bezier(0.4, 1.4, 0.6, 1), background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.smart-switch.on {
+  background: #2fb344;
+  box-shadow: 0 0 14px 1px rgba(47, 179, 68, 0.45);
+}
+.smart-switch.on .smart-knob { left: 33px; }
+.smart-switch.off {
+  background: #e03131;
+  box-shadow: 0 0 12px 1px rgba(224, 49, 49, 0.40);
+}
+.smart-switch.off .smart-knob { left: 3px; }
+.smart-switch.pending {
+  background: #f59f00;
+  box-shadow: 0 0 14px 1px rgba(245, 159, 0, 0.45);
+  cursor: default;
+}
+.smart-switch.pending .smart-knob { left: 18px; }
+.smart-switch.pending .smart-knob::after {
+  content: "";
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2.5px solid #f59f00;
+  border-top-color: transparent;
+  animation: smartspin 0.7s linear infinite;
+}
+@keyframes smartspin { to { transform: rotate(360deg); } }
+.smart-status {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.smart-status.on { color: #2fb344; }
+.smart-status.off { color: #e03131; }
+.smart-status.pending { color: #f59f00; }
+.smart-status.timeout { color: #f59f00; }

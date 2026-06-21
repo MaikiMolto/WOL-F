@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/brands.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/solid.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=16">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=17">
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/updatestatus.js') }}"></script>
     <script>
@@ -159,7 +159,7 @@
               {% endif -%}
 
               <div class="wf-fbtns">
-                <button type="button" class="wf-fb" data-tipkey="tipCron" title="Configure Cron" data-bs-toggle="modal" data-bs-target="#cronSettingsModal" onclick="loadCronSettings('{{ computer.name }}', '{{ computer.cron_wol_schedule }}', '{{ computer.cron_sol_schedule }}', '{{ computer.mac_address }}')">
+                <button type="button" class="wf-fb" data-tipkey="tipCron" title="Configure Cron" data-bs-toggle="modal" data-bs-target="#cronSettingsModal" onclick='loadCronSettings({{ computer.mac_address|tojson }}, {{ computer.name|tojson }}, {{ computer.cron_wol_schedule|default('',true)|tojson }}, {{ computer.cron_sol_schedule|default('',true)|tojson }})'>
                   <img src="{{ url_for('static', filename='images/wol-f/timer.png') }}" alt="Cron">
                 </button>
                 <button type="button" class="wf-fb" data-tipkey="tipEdit" title="Edit computer" data-bs-toggle="modal" data-bs-target="#editComputer" data-name="{{ computer.name }}" data-mac-address="{{ computer.mac_address }}" data-ip-address="{{ computer.ip_address }}" data-test-type="{{ computer.test_type }}" data-type="{{ computer.type or '' }}" data-link="{{ computer.link or '' }}">
@@ -349,7 +349,7 @@
 
     {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
     <script src="{{ url_for('static', filename='js/editcomputer.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/editcron.js') }}?v=13"></script>
+    <script src="{{ url_for('static', filename='js/editcron.js') }}?v=14"></script>
     <script src="{{ url_for('static', filename='js/delcomputer.js') }}"></script>
     {% endif -%}
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>

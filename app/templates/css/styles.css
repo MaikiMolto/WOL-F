@@ -393,3 +393,33 @@ html[data-bs-theme="light"] .wf-sort .dropdown-item:hover,html[data-bs-theme="li
 .wf-jobsw:hover{filter:brightness(1.12)}
 html[data-bs-theme="light"] .wf-jobsw.aktiv{background:#2fb344}
 .wf-paused{font-size:10px;color:var(--wf-pend);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* === Friendly cron schedule builder (editcron.js) === */
+.wf-cron-device{font-size:16px;font-weight:800;color:var(--wf-accent);margin-bottom:14px;font-family:Segoe UI,system-ui,sans-serif}
+.wf-cron-builder{display:flex;flex-direction:column;gap:14px}
+.wf-cron-sec{background:#0e131a;border:1px solid var(--wf-border);border-radius:14px;padding:14px 14px 12px}
+.wf-cron-sec-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--wf-text);margin-bottom:10px}
+.wf-cron-sec-title .fa-sun{color:var(--wf-pend)}
+.wf-cron-sec-title .fa-moon{color:var(--wf-accent)}
+.wf-cron-current-row{font-size:12.5px;color:var(--wf-muted);margin-bottom:11px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wf-cron-current-lbl{font-weight:700}
+.wf-cron-current-val{color:var(--wf-text);font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace}
+.wf-cron-current-row.wf-cron-none{font-style:italic;opacity:.8}
+.wf-presets{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.wf-preset{padding:5px 12px;border-radius:30px;background:#141b24;border:1px solid var(--wf-border);color:var(--wf-muted);font-size:12.5px;font-weight:700;cursor:pointer}
+.wf-preset:hover{color:var(--wf-text);border-color:var(--wf-accent)}
+.wf-days{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.wf-day{width:40px;height:38px;border-radius:10px;background:#141b24;border:1px solid var(--wf-border);color:var(--wf-muted);font-size:13px;font-weight:800;cursor:pointer;transition:all .12s}
+.wf-day:hover{color:var(--wf-text);border-color:var(--wf-accent)}
+.wf-day.active{background:var(--wf-accent);border-color:var(--wf-accent);color:#04222a;box-shadow:0 0 10px rgba(34,211,238,.35)}
+.wf-time-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.wf-cron-lbl{font-size:13px;font-weight:700;color:var(--wf-muted)}
+.wf-time-input{background:#141b24;border:1px solid var(--wf-border);color:var(--wf-text);border-radius:10px;padding:7px 11px;font-size:14px;font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace;color-scheme:dark}
+.wf-time-input:focus{outline:none;border-color:var(--wf-accent);box-shadow:0 0 0 3px rgba(34,211,238,.18)}
+.wf-cron-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wf-cron-preview-lbl{font-size:12.5px;color:var(--wf-muted);font-weight:700}
+.wf-cron-preview{font-size:13.5px;font-weight:800;color:var(--wf-accent);font-family:ui-monospace,Menlo,Consolas,monospace}
+.wf-cron-preview-empty{color:var(--wf-muted)}
+.wf-cron-foot .wf-cron-planbtn{margin-left:auto}
+.wf-cron-hint{font-size:12px;color:var(--wf-off);margin-top:8px;min-height:0}
+.wf-cron-hint:empty{margin-top:0}

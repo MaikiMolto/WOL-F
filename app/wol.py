@@ -230,27 +230,28 @@ def check_invalid_cron(cron):
   return any(not re.match(pattern, part) for pattern, part in zip(patterns, parts))
 
 def delete_cron_entry(request_mac_address):
+  reversed_mac = ':'.join(reversed(request_mac_address.split(':')))
   with open(cron_filename, 'r') as f:
     lines = f.readlines()
 
-  # Look for the line with the specified MAC address and remove it
+  # Remove every cron line for this MAC, including paused (#PAUSED ) ones.
+  # Genuine comments and blank lines are preserved.
   new_lines = []
   deleted = False
   for line in lines:
-    if line.startswith('#'):
+    raw = line.rstrip('\n')
+    is_paused = raw.startswith('#PAUSED ')
+    work = raw[len('#PAUSED '):] if is_paused else raw
+    stripped = work.strip()
+    if not stripped or (stripped.startswith('#') and not is_paused):
       new_lines.append(line)
-    else:
-      fields = line.strip().split()
-      schedule = ' '.join(fields[:5])
-      user = fields[5]
-      command = ' '.join(fields[6:])
-      mac_address = command.split()[-1]
-      if mac_address == request_mac_address:
-        deleted = True
-      else:
-        new_lines.append(line)
+      continue
+    fields = stripped.split()
+    if len(fields) >= 7 and fields[-1] in (request_mac_address, reversed_mac):
+      deleted = True
+      continue
+    new_lines.append(line)
 
-    # If a line was deleted, write the new contents to the file
   if deleted:
     with open(cron_filename, 'w') as f:
       f.writelines(new_lines)

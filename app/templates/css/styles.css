@@ -292,6 +292,9 @@ html[data-bs-theme="light"] .modal .btn-close{filter:invert(1) grayscale(1) brig
 .modal .btn-secondary{background:#0e131a;border:1px solid var(--wf-border);color:#aeb8c4}
 .modal .btn-danger{background:linear-gradient(135deg,#ef6f5a,#c02a2f);border:none;color:#fff}
 .modal .btn:hover{filter:brightness(1.1)}
+/* "Schliessen"-Buttons (mClose) im gruen->cyan Accent statt grau (Maik-Wunsch) - NUR Schliessen, nicht Abbrechen */
+.modal .btn-secondary[data-i18n="mClose"]{background:linear-gradient(135deg,#2fb344,#22d3ee);border-color:transparent;color:#06222a}
+html[data-bs-theme="light"] .modal .btn-secondary[data-i18n="mClose"]{background:linear-gradient(135deg,#2fb344,#22d3ee);border-color:transparent;color:#06222a}
 #cronSettingsContent h5{color:var(--wf-accent);font-weight:800}
 #cronSettingsContent .badge.bg-secondary{background:#1c2530 !important;color:var(--wf-accent);border:1px solid var(--wf-border);font-weight:700}
 #cronSettingsContent .add-button,#cronSettingsContent .delete-button{border-radius:30px;border:1px solid var(--wf-border);background:#1a212b;width:auto;height:auto;padding:6px 14px;font-size:15px;cursor:pointer;line-height:1}

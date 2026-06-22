@@ -265,14 +265,14 @@ body{padding:18px 16px 46px}
 .wf-search .search-input{width:auto;min-width:50px;flex:1 1 auto}
 
 /* custom dark/light mode icons (Maik) - swap via data-bs-theme */
-.wf-mode-icon{height:21px;width:21px;object-fit:contain;display:none}
+.wf-mode-icon{height:30px;width:30px;object-fit:contain;display:none}
 .wf-mode-dark{display:inline-block}
 html[data-bs-theme="light"] .wf-mode-dark{display:none}
 html[data-bs-theme="light"] .wf-mode-light{display:inline-block}
 /* About-Button: gruen->cyan Rahmen + Hover-Icon-Wechsel (Maiks Icons) */
-.wf-iconbtn.wf-aboutbtn{background:linear-gradient(#0e131a,#0e131a) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:2px solid transparent}
-html[data-bs-theme="light"] .wf-iconbtn.wf-aboutbtn{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:2px solid transparent}
-.wf-about-ic{height:21px;width:21px;object-fit:contain}
+.wf-iconbtn.wf-aboutbtn{background:linear-gradient(#0e131a,#0e131a) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+html[data-bs-theme="light"] .wf-iconbtn.wf-aboutbtn{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+.wf-about-ic{height:30px;width:30px;object-fit:contain}
 .wf-about-full{display:none}
 .wf-aboutbtn:hover .wf-about-normal{display:none}
 .wf-aboutbtn:hover .wf-about-full{display:inline-block}
@@ -459,3 +459,9 @@ html[data-bs-theme="light"] .wf-time-input,html[data-bs-theme="light"] .wf-time-
 .wf-ampm{display:inline-flex;border:1px solid var(--wf-border);border-radius:10px;overflow:hidden;margin-left:8px}
 .wf-ampm-btn{padding:7px 13px;background:#141b24;border:none;color:var(--wf-muted);font-size:13px;font-weight:800;cursor:pointer}
 .wf-ampm-btn.active{background:linear-gradient(135deg,#2fb344,#22d3ee);color:#04222a}
+
+/* === Einheitlicher gruen->cyan Gradient-Rahmen: Header-Leiste + alle Buttons (1.5px) === */
+.wf-topbar{background:linear-gradient(180deg,#151b23,#11161d) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+.wf-search,.wf-sort .wf-sortbtn,.wf-iconbtn,.wf-lang{background:linear-gradient(#0e131a,#0e131a) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+html[data-bs-theme="light"] .wf-topbar{background:linear-gradient(180deg,#ffffff,#eef2f8) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+html[data-bs-theme="light"] .wf-search,html[data-bs-theme="light"] .wf-sort .wf-sortbtn,html[data-bs-theme="light"] .wf-iconbtn,html[data-bs-theme="light"] .wf-lang{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}

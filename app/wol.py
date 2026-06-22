@@ -88,6 +88,8 @@ app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24)
 ENABLE_LOGIN = os.environ.get('ENABLE_LOGIN', 'false').strip().lower() == 'true'
 LOGIN_USERNAME = os.environ.get('USERNAME', 'admin')
 LOGIN_PASSWORD = os.environ.get('PASSWORD', 'admin')
+WF_LANGUAGE = (os.environ.get('LANGUAGE', 'de') or 'de').strip().lower()
+if WF_LANGUAGE not in ('de', 'en'): WF_LANGUAGE = 'de'
 
 db_path = '/app/db/computers.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
@@ -134,7 +136,7 @@ def login():
       session.permanent = True
       return redirect(url_for('wol_form'))
     error = True
-  return render_template('login.html', error=error)
+  return render_template('login.html', error=error, lang=WF_LANGUAGE)
 
 
 @app.route('/logout')
@@ -369,7 +371,7 @@ def delete_cron_entry(request_mac_address):
 @app.route('/')
 def wol_form():
   computers = load_computers()
-  return render_template('wol_form.html', computers=computers, is_computer_awake=lambda *_: "asleep", os=os, enable_login=ENABLE_LOGIN)
+  return render_template('wol_form.html', computers=computers, is_computer_awake=lambda *_: "asleep", os=os, enable_login=ENABLE_LOGIN, lang=WF_LANGUAGE)
 
 @app.route('/delete_computer', methods=['POST'])
 def delete_computer():

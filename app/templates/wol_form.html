@@ -380,7 +380,7 @@
     </div>
     <script>
       (function () {
-        function getLang(){ try { return localStorage.getItem("wfLang") || "de"; } catch(e){ return "de"; } }
+        function getLang(){ try { return localStorage.getItem("wfLang") || "{{ lang|default('de') }}"; } catch(e){ return "{{ lang|default('de') }}"; } }
         window.wfGetLang = getLang;
         var dict = {
           de: { wakeAll:"Alle wecken", sleepAll:"Alle schlafen", addDevice:"Ger\u00e4t", scheduleOff:"Schedule aus", searchPh:"Suche Name, MAC, IP", sortName:"Nach Name", sortIp:"Nach IP", sortMac:"Nach MAC", mAddTitle:"Gerät hinzufügen", mEditTitle:"Gerät bearbeiten", mCronTitle:"Wecken/Schlafen planen", mDelTitle:"Löschen bestätigen", mArpTitle:"Gerät auswählen", mAboutTitle:"Über", mName:"Name:", mMac:"MAC-Adresse:", mIp:"IP-Adresse:", mCheck:"Status-Prüfung:", mType:"Gerätetyp (optional):", mLink:"Web-UI-Link (optional):", mScan:"Netzwerk scannen", mCancel:"Abbrechen", mAdd:"Hinzufügen", mSave:"Speichern", mClose:"Schließen", mDelete:"Löschen", mValidate:"Übernehmen", mDelConfirm:"Wirklich löschen:", mScanning:"Suche läuft …", schedPaused:"pausiert", phType:"z.B. SRV, NAS, PC", cronHelpLbl:"Hilfe:", cronHelpSol:"Sleep on LAN einrichten \u2197" },

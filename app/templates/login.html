@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" data-bs-theme="dark">
+<html lang="{{ lang|default('de') }}" data-bs-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
   <title>WOL-F · Login</title>
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/wol-f/logo.png') }}"/>
   <link rel="icon" href="{{ url_for('static', filename='images/wol-f/logo.png') }}" type="image/png"/>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=38">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=40">
   <style>
     html,body{height:100%;}
     body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
@@ -42,12 +42,12 @@
     <div class="wf-login-title">WOL-F</div>
     <div class="wf-login-sub">Wake-On-LAN Fleet</div>
     <form class="wf-login-card" method="POST" action="{{ url_for('login') }}" autocomplete="on">
-      {% if error %}<div class="wf-login-err">⚠ Benutzername oder Passwort falsch</div>{% endif %}
-      <input type="text" name="username" placeholder="Benutzername" autofocus autocomplete="username" required>
-      <input type="password" name="password" placeholder="Passwort" autocomplete="current-password" required>
-      <button class="wf-login-btn" type="submit">Anmelden</button>
+      {% if error %}<div class="wf-login-err">⚠ {% if lang == 'en' %}Wrong username or password{% else %}Benutzername oder Passwort falsch{% endif %}</div>{% endif %}
+      <input type="text" name="username" placeholder="{% if lang == 'en' %}Username{% else %}Benutzername{% endif %}" autofocus autocomplete="username" required>
+      <input type="password" name="password" placeholder="{% if lang == 'en' %}Password{% else %}Passwort{% endif %}" autocomplete="current-password" required>
+      <button class="wf-login-btn" type="submit">{% if lang == 'en' %}Sign in{% else %}Anmelden{% endif %}</button>
     </form>
-    <div class="wf-login-foot">🔒 Geschützter Zugang</div>
+    <div class="wf-login-foot">🔒 {% if lang == 'en' %}Protected access{% else %}Geschützter Zugang{% endif %}</div>
   </div>
 </body>
 </html>

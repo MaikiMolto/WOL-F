@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/brands.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/solid.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=37">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=38">
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/updatestatus.js') }}?v=1"></script>
     <script>
@@ -86,6 +86,7 @@
       {% endif -%}
 
       <a class="wf-iconbtn wf-aboutbtn" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal" aria-label="About" data-tipkey="tipAbout" title="About"><img class="wf-about-ic wf-about-normal" src="/templates/images/wol-f/about.png" alt="About"><img class="wf-about-ic wf-about-full" src="/templates/images/wol-f/about_full.png" alt=""></a>
+      {% if enable_login %}<a class="wf-iconbtn wf-logoutbtn" href="{{ url_for('logout') }}" data-tipkey="tipLogout" title="Logout" aria-label="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>{% endif %}
 
       </div>
     </header>
@@ -409,8 +410,8 @@
         if(pOn) pOn.addEventListener("click",function(){ wfBulk(".smart-switch.on","sleep"); });
         if(pOff) pOff.addEventListener("click",function(){ wfBulk(".smart-switch.off","wake"); });
         var tipDict={
-          de:{tipOnline:"Alle online Geräte runterfahren",tipOffline:"Alle offline Geräte wecken",tipCron:"Zeitplan (Cron) einrichten",tipEdit:"Gerät bearbeiten",tipTrash:"Gerät löschen",tipSort:"Sortieren",tipTheme:"Hell-/Dunkelmodus",tipAdd:"Neues Gerät hinzufügen",tipAbout:"Über WOL-F",tipClear:"Suche löschen",tipWebui:"Web-UI öffnen",tipToggle:"Klicken zum Schalten", tipJob:"Zeitplan pausieren/aktivieren"},
-          en:{tipOnline:"Shut down all online devices",tipOffline:"Wake all offline devices",tipCron:"Configure schedule (cron)",tipEdit:"Edit device",tipTrash:"Delete device",tipSort:"Sort",tipTheme:"Light/Dark mode",tipAdd:"Add new device",tipAbout:"About WOL-F",tipClear:"Clear search",tipWebui:"Open web UI",tipToggle:"Click to toggle", tipJob:"Pause/resume schedule"}
+          de:{tipOnline:"Alle online Geräte runterfahren",tipOffline:"Alle offline Geräte wecken",tipCron:"Zeitplan (Cron) einrichten",tipEdit:"Gerät bearbeiten",tipTrash:"Gerät löschen",tipSort:"Sortieren",tipTheme:"Hell-/Dunkelmodus",tipAdd:"Neues Gerät hinzufügen",tipAbout:"Über WOL-F",tipLogout:"Abmelden",tipClear:"Suche löschen",tipWebui:"Web-UI öffnen",tipToggle:"Klicken zum Schalten", tipJob:"Zeitplan pausieren/aktivieren"},
+          en:{tipOnline:"Shut down all online devices",tipOffline:"Wake all offline devices",tipCron:"Configure schedule (cron)",tipEdit:"Edit device",tipTrash:"Delete device",tipSort:"Sort",tipTheme:"Light/Dark mode",tipAdd:"Add new device",tipAbout:"About WOL-F",tipLogout:"Logout",tipClear:"Clear search",tipWebui:"Open web UI",tipToggle:"Click to toggle", tipJob:"Pause/resume schedule"}
         };
         function wfApplyTips(lang){ if(!window.bootstrap) return; var d=tipDict[lang]||tipDict.de; document.querySelectorAll("[data-tipkey]").forEach(function(el){ var txt=d[el.getAttribute("data-tipkey")]; if(!txt) return; var old=bootstrap.Tooltip.getInstance(el); if(old) old.dispose(); el.setAttribute("title",txt); new bootstrap.Tooltip(el,{trigger:"hover",placement: el.closest(".card")?"top":"bottom"}); }); }
         function wfSetLang(lang){ var d=dict[lang]; if(!d) return;

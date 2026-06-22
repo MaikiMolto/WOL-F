@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WOL-F · Wake-On-LAN Fleet">
+  <title>WOL-F · Login</title>
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/wol-f/logo.png') }}"/>
+  <link rel="icon" href="{{ url_for('static', filename='images/wol-f/logo.png') }}" type="image/png"/>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=38">
+  <style>
+    html,body{height:100%;}
+    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+         background:radial-gradient(1100px 520px at 50% -16%, rgba(34,211,238,.12), rgba(34,211,238,0) 58%), #0c0f14;
+         font-family:'Segoe UI',-apple-system,system-ui,Roboto,sans-serif;overflow:hidden;}
+    .wf-login{width:100%;max-width:380px;padding:24px;text-align:center;animation:wffade .6s ease-out;}
+    @keyframes wffade{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+    .wf-login-logo{width:172px;height:172px;object-fit:contain;-webkit-mask-image:radial-gradient(circle at 50% 44%,#000 48%,transparent 68%);mask-image:radial-gradient(circle at 50% 44%,#000 48%,transparent 68%);
+                   filter:drop-shadow(0 0 22px rgba(34,211,238,.45));animation:wfpulse 3.2s ease-in-out infinite;}
+    @keyframes wfpulse{0%,100%{filter:drop-shadow(0 0 16px rgba(34,211,238,.30));}50%{filter:drop-shadow(0 0 36px rgba(34,211,238,.62));}}
+    .wf-login-title{font-size:36px;font-weight:900;letter-spacing:2px;margin:8px 0 2px;
+                    background:linear-gradient(135deg,#3ddc84,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent;}
+    .wf-login-sub{color:#8794a3;font-size:12px;letter-spacing:4px;text-transform:uppercase;margin-bottom:30px;}
+    .wf-login-card{background:linear-gradient(#141a22,#10151c) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;
+                   border:1.5px solid transparent;border-radius:18px;padding:26px 22px 24px;box-shadow:0 24px 60px rgba(0,0,0,.55);}
+    .wf-login-err{display:flex;align-items:center;justify-content:center;gap:7px;color:#ff7a7a;font-size:13px;font-weight:700;
+                  margin-bottom:14px;padding:9px;border-radius:10px;background:rgba(224,49,49,.12);border:1px solid rgba(224,49,49,.35);}
+    .wf-login-card input{width:100%;box-sizing:border-box;background:#0e131a;border:1px solid var(--wf-border);color:var(--wf-text);
+                         border-radius:11px;padding:12px 14px;font-size:14.5px;margin-bottom:12px;transition:border-color .15s,box-shadow .15s;}
+    .wf-login-card input::placeholder{color:var(--wf-muted);}
+    .wf-login-card input:focus{outline:none;border-color:var(--wf-accent);box-shadow:0 0 0 3px rgba(34,211,238,.18);}
+    .wf-login-btn{width:100%;border:none;border-radius:11px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;
+                  background:linear-gradient(135deg,#2fb344,#22d3ee);color:#06222a;margin-top:4px;transition:filter .15s,transform .05s;}
+    .wf-login-btn:hover{filter:brightness(1.09);}
+    .wf-login-btn:active{transform:translateY(1px);}
+    .wf-login-foot{color:#5a6675;font-size:11px;margin-top:20px;letter-spacing:.3px;}
+  </style>
+</head>
+<body>
+  <div class="wf-login">
+    <img class="wf-login-logo" src="{{ url_for('static', filename='images/wol-f/logo.png') }}" alt="WOL-F">
+    <div class="wf-login-title">WOL-F</div>
+    <div class="wf-login-sub">Wake-On-LAN Fleet</div>
+    <form class="wf-login-card" method="POST" action="{{ url_for('login') }}" autocomplete="on">
+      {% if error %}<div class="wf-login-err">⚠ Benutzername oder Passwort falsch</div>{% endif %}
+      <input type="text" name="username" placeholder="Benutzername" autofocus autocomplete="username" required>
+      <input type="password" name="password" placeholder="Passwort" autocomplete="current-password" required>
+      <button class="wf-login-btn" type="submit">Anmelden</button>
+    </form>
+    <div class="wf-login-foot">🔒 Geschützter Zugang</div>
+  </div>
+</body>
+</html>

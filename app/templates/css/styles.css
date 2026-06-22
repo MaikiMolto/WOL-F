@@ -476,3 +476,6 @@ html[data-bs-theme="light"] .wf-preset.active{background:linear-gradient(135deg,
 html[data-bs-theme="light"] .modal .btn-primary{background:#ffffff;border-color:rgba(11,125,150,.45);color:#0b7d96}
 html[data-bs-theme="light"] .modal .list-group-item{background:#ffffff;color:#1b2533;border-color:#d3dae3}
 html[data-bs-theme="light"] .modal .list-group-item-action:hover,html[data-bs-theme="light"] .modal .list-group-item.active{background:#dff3f8;border-color:var(--wf-accent);color:#0b7d96}
+/* Logout-Button: roter Icon-Akzent (raus) */
+.wf-logoutbtn .fa-right-from-bracket{font-size:15px;color:#eb8a8a}
+.wf-logoutbtn:hover .fa-right-from-bracket{color:#ff7a7a}

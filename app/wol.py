@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template, redirect, url_for, jsonify, flash
+from flask import Flask, request, render_template, redirect, url_for, jsonify, flash, session
+import hmac
 from flask_sqlalchemy import SQLAlchemy
 import logging
 import socket
@@ -83,6 +84,11 @@ def sanitize_link(raw):
 app = Flask(__name__, static_folder='templates')
 app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24)
 
+# --- Simple optional login (WOL-F) ---
+ENABLE_LOGIN = os.environ.get('ENABLE_LOGIN', 'false').strip().lower() == 'true'
+LOGIN_USERNAME = os.environ.get('USERNAME', 'admin')
+LOGIN_PASSWORD = os.environ.get('PASSWORD', 'admin')
+
 db_path = '/app/db/computers.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -100,6 +106,41 @@ def csrf_protect():
   source = request.headers.get('Origin') or request.headers.get('Referer')
   if source and urlparse(source).netloc != request.host:
     return ('Cross-origin request blocked.', 403)
+
+
+@app.before_request
+def require_login():
+  if not ENABLE_LOGIN:
+    return
+  if request.endpoint in ('static', 'login'):
+    return
+  if session.get('logged_in'):
+    return
+  if request.method == 'GET':
+    return redirect(url_for('login'))
+  return ('Login required.', 401)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+  if not ENABLE_LOGIN or session.get('logged_in'):
+    return redirect(url_for('wol_form'))
+  error = False
+  if request.method == 'POST':
+    u = request.form.get('username', '')
+    p = request.form.get('password', '')
+    if hmac.compare_digest(u, LOGIN_USERNAME) and hmac.compare_digest(p, LOGIN_PASSWORD):
+      session['logged_in'] = True
+      session.permanent = True
+      return redirect(url_for('wol_form'))
+    error = True
+  return render_template('login.html', error=error)
+
+
+@app.route('/logout')
+def logout():
+  session.clear()
+  return redirect(url_for('login'))
 
 def generate_modal_html(messages, title):
   return render_template('generate_modal.html', title=title, messages=messages)
@@ -328,7 +369,7 @@ def delete_cron_entry(request_mac_address):
 @app.route('/')
 def wol_form():
   computers = load_computers()
-  return render_template('wol_form.html', computers=computers, is_computer_awake=lambda *_: "asleep", os=os)
+  return render_template('wol_form.html', computers=computers, is_computer_awake=lambda *_: "asleep", os=os, enable_login=ENABLE_LOGIN)
 
 @app.route('/delete_computer', methods=['POST'])
 def delete_computer():

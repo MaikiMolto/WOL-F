@@ -6,3 +6,9 @@ __pycache__/
 *.pyc
 build*.log
 *.old
+
+# WOL-F workspace / build artifacts
+_feedback/
+appdata/
+__pycache__/
+*.pyc

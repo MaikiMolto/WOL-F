@@ -1,130 +1,134 @@
-<div align="center" width="100%">
-    <img src="app/templates/images/gptwol.png" width="150" />
+<div align="center">
+  <img src="app/templates/images/wol-f/logo.png" width="160" alt="WOL-F" />
+
+  # WOL-F · Wake-On-LAN Fleet
+
+  **A modern, security-hardened Wake/Sleep-on-LAN fleet manager — wake and shut down the computers on your LAN from a clean web GUI.**
+
+  _by **MaikiMolto & Nex** · inspired by [GPTWOL](https://github.com/Misterbabou/gptwol)_
 </div>
 
-# GPTWOL a simple Wake/Sleep On Lan docker GUI
-
----
-[![Docker Pulls](https://img.shields.io/docker/pulls/misterbabou/gptwol.svg?logo=docker)](https://hub.docker.com/r/misterbabou/gptwol)
-[![GitHub Release](https://img.shields.io/github/release/Misterbabou/gptwol.svg?logo=github&logoColor=959DA5)](https://github.com/Misterbabou/gptwol/releases/latest)
-[![GitHub last commit](https://img.shields.io/github/last-commit/Misterbabou/gptwol?logo=github&logoColor=959DA5)](https://github.com/Misterbabou/gptwol/commits/main)
-[![MIT Licensed](https://img.shields.io/github/license/Misterbabou/gptwol.svg?logo=github&logoColor=959DA5)](https://github.com/Misterbabou/gptwol/blob/main/LICENSE.md)
 ---
 
-GPTWOL is a simple and lightweight Wake/Sleep on Lan gui made with python to wake up and shutdown your computers on your LAN.
+WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **shut down** (Sleep-on-LAN) the computers on your LAN — with per-device scheduling, live status checks, an ARP network scanner, optional login, optional built-in HTTPS, and a polished dark/light, DE/EN interface.
 
-## Screenshot 
+> **Inspired by [GPTWOL](https://github.com/Misterbabou/gptwol)** (MIT © Misterbabou). WOL-F is a heavily reworked fork: redesigned UI, full DE/EN i18n, security hardening (CSRF tokens, security headers, login rate-limiting, persistent secret key), optional built-in HTTPS, mobile fixes and more.
 
-| Light Web                         | Dark Web                           |
-| --------------------------------- | ---------------------------------- |
-| ![](/assets/gptwol-web-light.png) | ![](/assets/gptwol-web-dark.png)   |
+## Features
 
-| Light Mobile                      | Dark Mobile                        |
-| --------------------------------- | ---------------------------------- |
-| ![](/assets/gptwol-mob-light.png) | ![](/assets/gptwol-mob-dark.png)   |
+- 🔌 **Wake-on-LAN** — send magic packets to wake computers
+- 😴 **Sleep-on-LAN** — shut computers down (via [SR-G/sleep-on-lan](https://github.com/SR-G/sleep-on-lan))
+- ⏰ **Scheduling** — per-device wake/sleep cron schedules via a beginner-friendly builder (presets, weekdays, time)
+- 📡 **Status checks** — ICMP ping, ARP or TCP port (configurable timeouts)
+- 🔍 **ARP network scan** to discover & add devices
+- ➕ **Add / edit / delete** devices (toggleable)
+- 🔎 **Search** by name, MAC or IP · **Sort** by name / IP / MAC
+- 🌗 **Dark & light mode** · 🌍 **DE / EN** with live switching
+- 🔐 **Optional login** (single user) — CSRF-protected, rate-limited, hardened session cookie
+- 🔒 **Optional built-in HTTPS** — self-signed cert auto-generated, no reverse proxy required
+- 📱 Responsive (desktop + mobile), low footprint (~20 MB RAM)
 
-## Features 
+## Screenshots
 
-- Docker Image to deploy
-- Send Wake On Lan packets to wake up computers
-- Send Sleep On Lan packets to shutdown computers
-- Add or Delete Computer
-- Computers status check with ping, arp or tcp request (timeout settings available)
-- ARP-SCAN to add computers
-- Very low power usage (20 mb RAM)
-- Check if IP and MAC provided are valid
-- cron job to wake up device
-- Check if Cron provided is valid
-- Search on computer Name, MAC or IP
-- Dark mode
-- Authentication (disable by default)
+_See [`docs/screenshots/`](docs/screenshots) — polished dark/light desktop UI, mobile view and login._
 
-## Special configuration you can change
-
-- Ping Refresh to check Status availability 
-- Disable Delete or Add Computers
-- Change the port of the Web UI
-- Enable authentication (Local auth with only one user or OIDC)
-
-![](/assets/authentication.png)
-
-## Docker Configuration
-> [!NOTE]
->
->It's recommended to use docker compose to run this application. [Install documentation](https://docs.docker.com/compose/install/)
+## Quick start (Docker)
 
 > [!CAUTION]
->
->- The app container needs to run in host network mode to send the wakeonlan command on your local network.
->- Make sure that the PORT you are using is free on your host computer
->- Make sure that BIOS settings and remote OS is configure to allow Wake On Lan
->- Don't expose gptwol directly on internet without proper authentication
+> - The container must run in **host network mode** to send WOL packets on your LAN.
+> - Make sure the chosen `PORT` is free on your host.
+> - Make sure BIOS/OS is configured to allow Wake-on-LAN.
+> - Don't expose WOL-F to the internet without protection — enable login + HTTPS, or put it behind a reverse proxy.
 
-### With docker compose
+### docker compose (recommended)
 
-Create `docker-compose.yml` file:
-```
+```yaml
 services:
-  gptwol:
-    container_name: gptwol
-    image: misterbabou/gptwol:latest
+  wol-f:
+    container_name: wol-f
+    image: maikimolto/wol-f:latest
     network_mode: host
     restart: unless-stopped
     environment:
-      - TZ=Europe/Paris #Set your timezone for Cron; default is UTC
-      #- PORT=5000 #Free Port on Your host; default is 5000
-      #- IP=0.0.0.0 #App listening IPV4 or IPV6 (ex [::]) address; default is 0.0.0.0
-      #- LOG_LEVEL=INFO #Can be DEBUG, INFO, WARN or ERROR
-      #- ENABLE_LOGIN=false # Enable or disable local login; You would be able to access with USERNAME and PASSWORD; default is false
-      #- USERNAME=admin # Set a username; default is admin
-      #- PASSWORD= # Required when ENABLE_LOGIN=true (the app refuses to start without it); no default
-      #- OIDC_ENABLED=false # Enable OIDC LOGIN; default is false
-      #- OIDC_ISSUER=https://auth.exemple.com #  Base URL of the OIDC server - Should not include the `/.well-known/openid-configuration` part and no trailing `/`; default is not set
-      #- OIDC_CLIENT_ID=oidcclientid # Your OIDC client ID; default is not set
-      #- OIDC_CLIENT_SECRET=oidcclientsecret # Your OIDC Client Secret; default is not set
-      #- OIDC_REDIRECT_URI=http(s)://urlofyourgptwol(:port) # Base URL of your GPTWOL instance; default is not set 
-      #- SCRIPT_NAME=/my-app # Uncomment this line to run the app under a prefix; default is not set
-      #- ENABLE_ADD_DEL=true # Enable or disable ADD computer and Delete computer buttons; default is true
-      #- ENABLE_REFRESH=true # Enable or disable automatic status refresh; default is true
-      #- REFRESH_INTERVAL=30 # Uncomment to change time between each status check for icmp, arp or tcp, can (in s); default value is 30 seconds
-      #- PING_TIMEOUT=300 #Uncomment to change the time to wait for a ping answer in (in ms); default value is 300 milliseconds
-      #- ARP_INTERFACE=eth0 #Uncomment this line to set an arp interface manually for scan and test; default is not set
-      #- ARP_TIMEOUT=300 #Uncomment to change the time to wait for a arp answer (in ms); default value is 300 milliseconds
-      #- TCP_TIMEOUT=1 #Uncomment to change the time to wait for a tcp check (in s);  default value 1 second
-      #- ENABLE_L2_WOL_PACKET=false # Enable L2 WOL packet instead of L4, default is false
-      #- L2_INTERFACE=eth0 # Set the default interface for L2 WOL (set this only if you set ENABLE_L2_WOL_PACKET to true), default is eth0
-      #- ENABLE_HTTPS=false # Serve HTTPS directly (self-signed cert auto-generated in /app/db) for setups without a reverse proxy; default is false
-      #- SSL_CERT=/app/db/wol-f-cert.pem # Path to a TLS certificate (used with ENABLE_HTTPS); auto-generated if missing
-      #- SSL_KEY=/app/db/wol-f-key.pem # Path to the TLS key (used with ENABLE_HTTPS); auto-generated if missing
-      #- SECRET_KEY= # Flask secret for sessions/CSRF; auto-persisted in /app/db if unset (set it explicitly for multi-instance setups)
-      #- SESSION_COOKIE_SECURE=false # Send the session cookie only over HTTPS (auto-enabled when ENABLE_HTTPS=true); default is false
-      #- GUNICORN_WORKERS=3 # Number of gunicorn workers; default is 3
-      #- GUNICORN_THREADS=2 # Threads per worker; default is 2
-      #- GUNICORN_TIMEOUT=60 # Worker timeout in seconds; default is 60
+      - TZ=Europe/Berlin
+      #- PORT=5000              # Web UI port; default 5000
+      #- IP=0.0.0.0             # listen address
+      #- LANGUAGE=de            # de | en ; default de
+      #- ENABLE_LOGIN=false     # single-user login
+      #- USERNAME=admin
+      #- PASSWORD=              # REQUIRED when ENABLE_LOGIN=true (no default)
+      #- SECRET_KEY=            # Flask secret; auto-persisted in /app/db if unset
+      #- ENABLE_HTTPS=false     # serve HTTPS directly (self-signed, no proxy needed)
+      #- SSL_CERT=/app/db/wol-f-cert.pem
+      #- SSL_KEY=/app/db/wol-f-key.pem
+      #- SESSION_COOKIE_SECURE=false   # auto-on when ENABLE_HTTPS=true
+      #- ENABLE_ADD_DEL=true
+      #- ENABLE_REFRESH=true
+      #- REFRESH_INTERVAL=30
+      #- PING_TIMEOUT=300
+      #- ARP_INTERFACE=eth0
+      #- ARP_TIMEOUT=300
+      #- TCP_TIMEOUT=1
+      #- ENABLE_L2_WOL_PACKET=false
+      #- L2_INTERFACE=eth0
+      #- SCRIPT_NAME=/my-app    # run under a subpath
+      #- LOG_LEVEL=INFO
+      #- GUNICORN_WORKERS=3
+      #- GUNICORN_THREADS=2
+      #- GUNICORN_TIMEOUT=60
     volumes:
       - ./appdata/db:/app/db
       - ./appdata/cron:/etc/cron.d
 ```
-
-Run the application
 ```
 docker compose up -d
 ```
 
-### With docker
+### docker run
 
-Run the application
 ```
-docker run -d \
-  --name=gptwol \
-  --network="host" \
-  --restart unless-stopped \
-  -e PORT=5000 \
-  -e TZ=Europe/Paris \
-  -v ./appdata/db:/app/db \
-  -v ./appdata/cron:/etc/cron.d \
-  misterbabou/gptwol:latest
+docker run -d --name wol-f --network host --restart unless-stopped \
+  -e TZ=Europe/Berlin -e PORT=5000 \
+  -v ./appdata/db:/app/db -v ./appdata/cron:/etc/cron.d \
+  maikimolto/wol-f:latest
 ```
+
+### Build from source
+
+```
+git clone https://github.com/MaikiMolto/wol-f.git && cd wol-f
+docker build -t wol-f:latest .
+```
+
+## Configuration
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `TZ` | `UTC` | Timezone (used for cron) |
+| `PORT` | `5000` | Web UI port |
+| `IP` | `0.0.0.0` | Listen address (IPv4/IPv6) |
+| `LANGUAGE` | `de` | UI default language (`de` / `en`) |
+| `LOG_LEVEL` | `INFO` | `DEBUG` / `INFO` / `WARN` / `ERROR` |
+| `ENABLE_LOGIN` | `false` | Enable single-user login |
+| `USERNAME` | `admin` | Login username |
+| `PASSWORD` | — | **Required when `ENABLE_LOGIN=true`** (app refuses to start without it) |
+| `SECRET_KEY` | _auto_ | Flask secret for sessions/CSRF; auto-persisted in `/app/db` if unset |
+| `ENABLE_HTTPS` | `false` | Serve HTTPS directly with a self-signed cert (no reverse proxy needed) |
+| `SSL_CERT` / `SSL_KEY` | `/app/db/wol-f-*.pem` | Custom TLS cert/key (used with `ENABLE_HTTPS`; auto-generated if missing) |
+| `SESSION_COOKIE_SECURE` | `false` | Send session cookie only over HTTPS (auto-on with `ENABLE_HTTPS`) |
+| `ENABLE_ADD_DEL` | `true` | Show add/delete buttons |
+| `ENABLE_REFRESH` | `true` | Auto status refresh |
+| `REFRESH_INTERVAL` | `30` | Status check interval (s) |
+| `PING_TIMEOUT` | `300` | Ping timeout (ms) |
+| `ARP_INTERFACE` | — | ARP interface for scan/test |
+| `ARP_TIMEOUT` | `300` | ARP timeout (ms) |
+| `TCP_TIMEOUT` | `1` | TCP check timeout (s) |
+| `ENABLE_L2_WOL_PACKET` | `false` | Use an L2 WOL packet instead of L4 |
+| `L2_INTERFACE` | `eth0` | Interface for L2 WOL |
+| `SCRIPT_NAME` | — | Run the app under a subpath |
+| `GUNICORN_WORKERS` | `3` | Number of gunicorn workers |
+| `GUNICORN_THREADS` | `2` | Threads per worker |
+| `GUNICORN_TIMEOUT` | `60` | Worker timeout (s) |
 
 ## Access & HTTPS
 
@@ -134,97 +138,43 @@ By default WOL-F serves plain **HTTP** on `PORT`. Three ways to reach it:
 - **Reverse proxy (recommended for HTTPS)** — put Zoraxy/Caddy/nginx/Traefik in front and let it terminate TLS; the app speaks HTTP to the proxy.
 - **Built-in HTTPS (no proxy)** — set `ENABLE_HTTPS=true`. The app then serves HTTPS directly on `PORT` using a self-signed certificate auto-generated in `/app/db` (the browser shows a one-time warning). Provide your own `SSL_CERT`/`SSL_KEY` to avoid the warning.
 
-## Configure Sleep on Lan
+## Configure Sleep-on-LAN
 
-- Check the [Sleep on Lan Github](https://github.com/SR-G/sleep-on-lan) repo to download and configure
-- GPTWOL send a reverse MAC wakeonlan packet on port 9 to shutdown your computer (you don't need to configure API)
+WOL-F shuts a computer down by sending a **reverse-MAC** WOL magic packet on **UDP port 9**, which [SR-G/sleep-on-lan](https://github.com/SR-G/sleep-on-lan) listens for (no API configuration required).
 
-### Sleep on Lan for a debian based computer
-
-- `sol.json`
-```
+**Linux (`sol.json`):**
+```json
 {
-    "Listeners": [
-        "UDP:9"
-    ],
-    "LogLevel": "INFO",
-    "Commands": [
-        {
-            "Operation": "shutdown",
-            "Command": "poweroff",
-            "Default": true
-        }
-    ]
+  "Listeners": ["UDP:9"],
+  "LogLevel": "INFO",
+  "Commands": [{ "Operation": "shutdown", "Command": "poweroff", "Default": true }]
 }
 ```
 
-### Sleep on Lan for a windows based computer
-
-- `sol.json`
-```
+**Windows (`sol.json`):**
+```json
 {
-    "Listeners": [
-        "UDP:9"
-    ],
-    "LogLevel": "INFO",
-    "Commands": [
-        {
-            "Operation": "shutdown",
-            "Command": "shutdown /s /t 0 /f"",
-            "Default": true
-        }
-    ]
+  "Listeners": ["UDP:9"],
+  "LogLevel": "INFO",
+  "Commands": [{ "Operation": "shutdown", "Command": "shutdown /s /t 0 /f", "Default": true }]
 }
 ```
-- Configure Windows Defender Firewall by adding a new Inbound Rule (UDP port 9 to allow).
-  
-## Configure OIDC
+Then add an inbound Windows Defender Firewall rule allowing UDP port 9.
 
-- You need to configure your OIDC provider to add new OIDC configuration. You need to enter `http(s)://yourgptwolurl(:port)/auth/oidc/callback` as Redirect URI
-- Configure the following ENV variables in docker compose: `OIDC_ENABLED OIDC_ISSUER OIDC_CLIENT_ID OIDC_CLIENT_SECRET OIDC_REDIRECT_URI` (see default docker-compose.yml)
-
-
-## Roadmap 
-
-:heavy_check_mark: Add ARM version (Added in 1.0.1)
-
-:heavy_check_mark: Add feature to plan automatic Wake on Lan (Cron) (Added in 1.0.3)
-
-:heavy_check_mark: Add Search feature (Added in 1.0.4)
-
-:heavy_check_mark: Remove Cron on Computer deletion (Added in 1.0.4)
-
-:heavy_check_mark: Improve load page performance due to ping timeout. (added in 1.0.5)
-
-:heavy_check_mark: Add a TCP port option to check availability without using ICMP (added in 2.0.1)
-
-:heavy_check_mark: Run app on subpath (added in 2.1.0)
-
-:heavy_check_mark: Make app responsive for smaller screen (added in 2.1.0)
-
-:heavy_check_mark: Add Dark Mode Switch (added in 2.1.3)
-
-:heavy_check_mark: move computers.txt in an other directory not to mount a file but a directory to the docker container (added in 4.0.0)
-
-:heavy_check_mark: Shutdown computers with Sleep on LAN (added in 4.1.0)
-
-:heavy_check_mark: Add optional simple authentication (added in 4.2.0)
-
-:heavy_check_mark: Add ARP SCAN to add you computer of for availability check (added in 5.0.0)
-
-:heavy_check_mark: Add Sort button to sort computer by Name, IP or MAC (added in 5.2.0)
-
-:heavy_check_mark: Migrate computers to a SQLite database (added in 7.0.0)
-
-:heavy_check_mark: OIDC sign in (added in 7.1.0)
-
-## Questions
+## FAQ
 
 <details>
-<summary>Is there a GUI to configure automatic wakeup and shutdown?</summary>
+<summary>Is there a GUI calendar for the automatic wake/shutdown schedules?</summary>
 <br>
-
-Automatic shutdown and wakeup are made in the GUI using cron syntax. As I want to keep the application simple, I will not implement a GUI with a calendar, month an days.
-You can check this [link](https://crontab.guru/) to help you build your cron.
-
+Schedules use cron syntax behind a beginner-friendly builder (presets, weekdays, time). To keep WOL-F simple there is no full calendar UI. See <a href="https://crontab.guru/">crontab.guru</a> if you want to craft a custom expression.
 </details>
+
+## Credits
+
+- **WOL-F** — by **MaikiMolto & Nex**
+- Inspired by **[GPTWOL](https://github.com/Misterbabou/gptwol)** by Misterbabou (MIT)
+- Sleep-on-LAN powered by **[SR-G/sleep-on-lan](https://github.com/SR-G/sleep-on-lan)**
+
+## License
+
+MIT — see [LICENSE.md](LICENSE.md). Original GPTWOL work © Misterbabou; WOL-F modifications © MaikiMolto & Nex.

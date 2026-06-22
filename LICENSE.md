@@ -1,6 +1,7 @@
 MIT License
 
-Copyright (c) 2026 Misterbabou
+Copyright (c) 2026 Misterbabou (original GPTWOL)
+Copyright (c) 2026 MaikiMolto & Nex (WOL-F modifications)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -127,7 +127,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = os.environ.get('SESSION_COOKIE_SECURE', 'false').strip().lower() == 'true'
+# When the app serves HTTPS itself (ENABLE_HTTPS), mark the session cookie Secure automatically
+_wf_https = os.environ.get('ENABLE_HTTPS', 'false').strip().lower() == 'true'
+app.config['SESSION_COOKIE_SECURE'] = _wf_https or (os.environ.get('SESSION_COOKIE_SECURE', 'false').strip().lower() == 'true')
 db = SQLAlchemy(app)
 # Token ist die CSRF-Abwehr; Referer/Host-Kopplung lockern -> funktioniert hinter Reverse-Proxy
 app.config['WTF_CSRF_SSL_STRICT'] = False

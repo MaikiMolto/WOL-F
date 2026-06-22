@@ -36,7 +36,7 @@ FROM python:3.14-slim
 
 # install only runtime packages (no build tools)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      fping cron netcat-traditional arp-scan \
+      fping cron netcat-traditional arp-scan openssl \
     && rm -rf /var/lib/apt/lists/*
 
 # copy the installed python packages + app assets from builder

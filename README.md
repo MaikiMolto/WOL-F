@@ -77,7 +77,7 @@ services:
       #- LOG_LEVEL=INFO #Can be DEBUG, INFO, WARN or ERROR
       #- ENABLE_LOGIN=false # Enable or disable local login; You would be able to access with USERNAME and PASSWORD; default is false
       #- USERNAME=admin # Set a username; default is admin
-      #- PASSWORD=admin # Set a password; default is admin
+      #- PASSWORD= # Required when ENABLE_LOGIN=true (the app refuses to start without it); no default
       #- OIDC_ENABLED=false # Enable OIDC LOGIN; default is false
       #- OIDC_ISSUER=https://auth.exemple.com #  Base URL of the OIDC server - Should not include the `/.well-known/openid-configuration` part and no trailing `/`; default is not set
       #- OIDC_CLIENT_ID=oidcclientid # Your OIDC client ID; default is not set
@@ -93,6 +93,14 @@ services:
       #- TCP_TIMEOUT=1 #Uncomment to change the time to wait for a tcp check (in s);  default value 1 second
       #- ENABLE_L2_WOL_PACKET=false # Enable L2 WOL packet instead of L4, default is false
       #- L2_INTERFACE=eth0 # Set the default interface for L2 WOL (set this only if you set ENABLE_L2_WOL_PACKET to true), default is eth0
+      #- ENABLE_HTTPS=false # Serve HTTPS directly (self-signed cert auto-generated in /app/db) for setups without a reverse proxy; default is false
+      #- SSL_CERT=/app/db/wol-f-cert.pem # Path to a TLS certificate (used with ENABLE_HTTPS); auto-generated if missing
+      #- SSL_KEY=/app/db/wol-f-key.pem # Path to the TLS key (used with ENABLE_HTTPS); auto-generated if missing
+      #- SECRET_KEY= # Flask secret for sessions/CSRF; auto-persisted in /app/db if unset (set it explicitly for multi-instance setups)
+      #- SESSION_COOKIE_SECURE=false # Send the session cookie only over HTTPS (auto-enabled when ENABLE_HTTPS=true); default is false
+      #- GUNICORN_WORKERS=3 # Number of gunicorn workers; default is 3
+      #- GUNICORN_THREADS=2 # Threads per worker; default is 2
+      #- GUNICORN_TIMEOUT=60 # Worker timeout in seconds; default is 60
     volumes:
       - ./appdata/db:/app/db
       - ./appdata/cron:/etc/cron.d
@@ -117,6 +125,14 @@ docker run -d \
   -v ./appdata/cron:/etc/cron.d \
   misterbabou/gptwol:latest
 ```
+
+## Access & HTTPS
+
+By default WOL-F serves plain **HTTP** on `PORT`. Three ways to reach it:
+
+- **Direct HTTP** — `http://<host>:<PORT>` works out of the box (browsing, add/edit/delete all work).
+- **Reverse proxy (recommended for HTTPS)** — put Zoraxy/Caddy/nginx/Traefik in front and let it terminate TLS; the app speaks HTTP to the proxy.
+- **Built-in HTTPS (no proxy)** — set `ENABLE_HTTPS=true`. The app then serves HTTPS directly on `PORT` using a self-signed certificate auto-generated in `/app/db` (the browser shows a one-time warning). Provide your own `SSL_CERT`/`SSL_KEY` to avoid the warning.
 
 ## Configure Sleep on Lan
 

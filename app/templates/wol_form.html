@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="WOL-F — Wake-On-LAN Fleet: manage and wake computers on your network.">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>WOL-F · Wake-On-LAN Fleet</title>
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/wol-f/logo.png') }}"/>
     <link rel="icon" href="{{ url_for('static', filename='images/wol-f/logo.png') }}" type="image/png"/>
@@ -12,6 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/brands.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/solid.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=43">
+    <script>(function(){var m=document.querySelector('meta[name=csrf-token]');var t=m?m.content:"";var of=window.fetch;window.fetch=function(i,o){o=o||{};var me=((o&&o.method)||(i&&i.method)||"GET").toUpperCase();if(t&&me!=="GET"&&me!=="HEAD"){o.headers=new Headers(o.headers||{});if(!o.headers.has("X-CSRFToken"))o.headers.set("X-CSRFToken",t);}return of(i,o);};})();</script>
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/updatestatus.js') }}?v=1"></script>
     <script>
@@ -190,6 +192,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form method="POST" action="{{ url_for('add_computer') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="modal-body">
             <div class="form-group">
               <label for="name" data-i18n="mName">Name:</label>
@@ -234,6 +237,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form method="POST" action="{{ url_for('edit_computer') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="modal-body">
               <div class="form-group">
                 <label for="name" data-i18n="mName">Name:</label>
@@ -355,7 +359,7 @@
     {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
     <script src="{{ url_for('static', filename='js/editcomputer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/editcron.js') }}?v=20"></script>
-    <script src="{{ url_for('static', filename='js/delcomputer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/delcomputer.js') }}?v=2"></script>
     {% endif -%}
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/darkmode.js') }}"></script>

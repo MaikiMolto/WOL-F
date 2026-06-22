@@ -42,6 +42,7 @@
     <div class="wf-login-title">WOL-F</div>
     <div class="wf-login-sub">Wake-On-LAN Fleet</div>
     <form class="wf-login-card" method="POST" action="{{ url_for('login') }}" autocomplete="on">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       {% if error %}<div class="wf-login-err">⚠ {% if lang == 'en' %}Wrong username or password{% else %}Benutzername oder Passwort falsch{% endif %}</div>{% endif %}
       <input type="text" name="username" placeholder="{% if lang == 'en' %}Username{% else %}Benutzername{% endif %}" autofocus autocomplete="username" required>
       <input type="password" name="password" placeholder="{% if lang == 'en' %}Password{% else %}Passwort{% endif %}" autocomplete="current-password" required>

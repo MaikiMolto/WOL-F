@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for, jsonify, flash, session
 import hmac
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
 import logging
 import socket
 import struct
@@ -83,7 +84,26 @@ def sanitize_link(raw):
   return candidate
 
 app = Flask(__name__, static_folder='templates')
-app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24)
+
+def _wf_secret_key():
+  k = os.environ.get('SECRET_KEY')
+  if k:
+    return k
+  path = '/app/db/.secret_key'
+  try:
+    if os.path.exists(path):
+      return open(path).read().strip()
+    os.makedirs('/app/db', exist_ok=True)
+    k = os.urandom(32).hex()
+    with open(path, 'w') as f:
+      f.write(k)
+    os.chmod(path, 0o600)
+    logger.info("Generated persistent SECRET_KEY at %s", path)
+    return k
+  except Exception as e:
+    logger.warning("Could not persist SECRET_KEY (%s); using ephemeral key", e)
+    return os.urandom(32).hex()
+app.secret_key = _wf_secret_key()
 
 # --- Simple optional login (WOL-F) ---
 ENABLE_LOGIN = os.environ.get('ENABLE_LOGIN', 'false').strip().lower() == 'true'
@@ -95,8 +115,6 @@ if ENABLE_LOGIN and not LOGIN_PASSWORD:
     "ENABLE_LOGIN=true requires a non-empty PASSWORD environment variable "
     "(refusing to start with a default/empty password)."
   )
-if ENABLE_LOGIN and not os.environ.get('SECRET_KEY'):
-  logger.warning("ENABLE_LOGIN=true but no SECRET_KEY set: sessions reset on every restart. Set SECRET_KEY for persistent logins.")
 # Basic in-memory login rate limiting (per source IP)
 LOGIN_MAX_ATTEMPTS = int(os.environ.get('LOGIN_MAX_ATTEMPTS', '8'))
 LOGIN_WINDOW = int(os.environ.get('LOGIN_WINDOW', '300'))
@@ -111,6 +129,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = os.environ.get('SESSION_COOKIE_SECURE', 'false').strip().lower() == 'true'
 db = SQLAlchemy(app)
+csrf = CSRFProtect(app)
 
 
 @app.after_request

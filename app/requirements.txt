@@ -2,4 +2,5 @@ WakeOnLan
 Flask
 gunicorn
 flask-sqlalchemy
+Flask-WTF
 requests

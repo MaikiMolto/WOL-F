@@ -30,7 +30,9 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 
 ## Screenshots
 
-_See [`docs/screenshots/`](docs/screenshots) — polished dark/light desktop UI, mobile view and login._
+| Dark mode | Light mode |
+| --- | --- |
+| ![WOL-F — dark](docs/screenshots/overview-dark.png) | ![WOL-F — light](docs/screenshots/overview-light.png) |
 
 ## Quick start (Docker)
 

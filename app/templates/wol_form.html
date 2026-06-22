@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/brands.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/solid.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=28">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=30">
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/updatestatus.js') }}?v=1"></script>
     <script>
@@ -85,7 +85,7 @@
       <button type="button" class="wf-add" data-tipkey="tipAdd" data-bs-toggle="modal" data-bs-target="#addComputer" aria-label="AddComputer">+ <span data-i18n="addDevice">Gerät</span></button>
       {% endif -%}
 
-      <a class="wf-iconbtn" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal" aria-label="About" data-tipkey="tipAbout" title="About"><i class="fa-solid fa-info-circle"></i></a>
+      <a class="wf-iconbtn wf-aboutbtn" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal" aria-label="About" data-tipkey="tipAbout" title="About"><img class="wf-about-ic wf-about-normal" src="/templates/images/wol-f/about.png" alt="About"><img class="wf-about-ic wf-about-full" src="/templates/images/wol-f/about_full.png" alt=""></a>
 
       </div>
     </header>

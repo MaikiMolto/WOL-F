@@ -269,6 +269,13 @@ body{padding:18px 16px 46px}
 .wf-mode-dark{display:inline-block}
 html[data-bs-theme="light"] .wf-mode-dark{display:none}
 html[data-bs-theme="light"] .wf-mode-light{display:inline-block}
+/* About-Button: gruen->cyan Rahmen + Hover-Icon-Wechsel (Maiks Icons) */
+.wf-iconbtn.wf-aboutbtn{background:linear-gradient(#0e131a,#0e131a) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:2px solid transparent}
+html[data-bs-theme="light"] .wf-iconbtn.wf-aboutbtn{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:2px solid transparent}
+.wf-about-ic{height:21px;width:21px;object-fit:contain}
+.wf-about-full{display:none}
+.wf-aboutbtn:hover .wf-about-normal{display:none}
+.wf-aboutbtn:hover .wf-about-full{display:inline-block}
 
 /* ===== WOL-F modal theming (dark panel + WOL-F font + pill buttons) ===== */
 .modal-content{background:linear-gradient(180deg,#141a22,#10151c) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1px solid transparent;border-radius:18px;color:var(--wf-text);font-family:'Segoe UI',-apple-system,system-ui,Roboto,sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.55);overflow:hidden}

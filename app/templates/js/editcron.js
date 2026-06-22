@@ -184,6 +184,7 @@
   window.loadCronSettings = function (macAddress, deviceName, wolSchedule, solSchedule) {
     var content = document.getElementById('cronSettingsContent');
     if (!content) return;
+    window._wfCron = { mac: macAddress, name: deviceName, wol: wolSchedule || '', sol: solSchedule || '' };
     var html = '<div class="wf-cron-device">' + esc(deviceName) + '</div>' +
       '<div class="wf-cron-builder">' +
       sectionHTML('wfCronWol', 'wake', '<img class="wf-cron-secic" src="' + (window.wf_wake_icon || '') + '" alt="">', macAddress, 'wol', wolSchedule) +
@@ -254,6 +255,22 @@
     });
   }
 
+  // Cron gespeichert/geloescht -> Modal NICHT schliessen (kein reload), nur Inhalt neu rendern.
+  // Erst beim Schliessen des Modals wird (falls dirty) neu geladen, damit die Karten stimmen.
+  function wfApplyCronChange(type, cron) {
+    window._wfCronDirty = true;
+    if (!window._wfCron) { location.reload(); return; }
+    if (type === 'wol') window._wfCron.wol = cron; else window._wfCron.sol = cron;
+    window.loadCronSettings(window._wfCron.mac, window._wfCron.name, window._wfCron.wol, window._wfCron.sol);
+    var pfx = type === 'wol' ? 'wfCronWol' : 'wfCronSol';
+    var hint = document.getElementById(pfx + '-hint');
+    if (hint) {
+      var en = (window.wfGetLang && window.wfGetLang() === 'en');
+      hint.style.color = '#3ddc84';
+      hint.textContent = cron ? (en ? '\u2713 Saved' : '\u2713 Gespeichert') : (en ? '\u2713 Deleted' : '\u2713 Gel\u00f6scht');
+    }
+  }
+
   // Plan = replace the schedule of this type (one wake / one sleep time per device).
   window.wfPlanCron = function (mac, type, prefix) {
     var cron = buildCron(prefix);
@@ -264,14 +281,25 @@
     var delUrl = type === 'wol' ? delete_wol_cron_url : delete_sol_cron_url;
     post(delUrl, mac)
       .then(function () { return post(addUrl, mac, '&cron_request=' + encodeURIComponent(cron)); })
-      .then(function () { location.reload(); })
+      .then(function () { wfApplyCronChange(type, cron); })
       .catch(function () { location.reload(); });
   };
 
   window.wfDeleteCron = function (mac, type) {
     var delUrl = type === 'wol' ? delete_wol_cron_url : delete_sol_cron_url;
-    post(delUrl, mac).then(function () { location.reload(); }).catch(function () { location.reload(); });
+    post(delUrl, mac).then(function () { wfApplyCronChange(type, ''); }).catch(function () { location.reload(); });
   };
+
+  // Beim Schliessen des Cron-Modals: falls Aenderungen gemacht wurden, Seite neu laden (Karten aktualisieren).
+  function wfBindCronModalClose() {
+    var cm = document.getElementById('cronSettingsModal');
+    if (!cm || cm._wfCloseBound) return;
+    cm._wfCloseBound = true;
+    cm.addEventListener('hidden.bs.modal', function () {
+      if (window._wfCronDirty) { window._wfCronDirty = false; location.reload(); }
+    });
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', wfBindCronModalClose); } else { wfBindCronModalClose(); }
 
   // Expose the human-readable formatter and prettify the cron labels shown on
   // the device cards (so the card matches the friendly dialog instead of raw cron).

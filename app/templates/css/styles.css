@@ -411,7 +411,7 @@ html[data-bs-theme="light"] .wf-jobsw.aktiv{background:#2fb344}
 .wf-days{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .wf-day{width:40px;height:38px;border-radius:10px;background:#141b24;border:1px solid var(--wf-border);color:var(--wf-muted);font-size:13px;font-weight:800;cursor:pointer;transition:all .12s}
 .wf-day:hover{color:var(--wf-text);border-color:var(--wf-accent)}
-.wf-day.active{background:var(--wf-accent);border-color:var(--wf-accent);color:#04222a;box-shadow:0 0 10px rgba(34,211,238,.35)}
+.wf-day.active{background:linear-gradient(135deg,#2fb344,#22d3ee);border-color:transparent;color:#04222a;box-shadow:0 0 10px rgba(34,211,238,.35)}
 .wf-time-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .wf-cron-lbl{font-size:13px;font-weight:700;color:var(--wf-muted)}
 .wf-time-input{background:#141b24;border:1px solid var(--wf-border);color:var(--wf-text);border-radius:10px;padding:7px 11px;font-size:14px;font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace;color-scheme:dark}
@@ -437,4 +437,4 @@ html[data-bs-theme="light"] .wf-jobsw.aktiv{background:#2fb344}
 .wf-time-colon{font-size:18px;font-weight:800;color:var(--wf-muted)}
 .wf-ampm{display:inline-flex;border:1px solid var(--wf-border);border-radius:10px;overflow:hidden;margin-left:8px}
 .wf-ampm-btn{padding:7px 13px;background:#141b24;border:none;color:var(--wf-muted);font-size:13px;font-weight:800;cursor:pointer}
-.wf-ampm-btn.active{background:var(--wf-accent);color:#04222a}
+.wf-ampm-btn.active{background:linear-gradient(135deg,#2fb344,#22d3ee);color:#04222a}

@@ -46,9 +46,20 @@ function ssSetVisual(sw, state) {
   }
 }
 
+function ssRelabelPending(sw, mac) {
+  // Pending-Label in der AKTUELLEN Sprache neu rendern (z.B. nach Sprachwechsel),
+  // ohne den laufenden Schaltvorgang zu stoeren. target -> 'up' (awake) | 'down' (asleep).
+  const p = pendingSwitches[mac];
+  if (!p) return;
+  ssSetVisual(sw, p.target === 'awake' ? 'up' : 'down');
+}
+
 function ssRefresh(sw) {
   const mac = sw.dataset.macAddress;
-  if (pendingSwitches[mac]) return;                 // Pending-Poller kuemmert sich
+  if (pendingSwitches[mac]) {                        // Pending-Poller kuemmert sich um den Status,
+    ssRelabelPending(sw, mac);                       // aber Label-Sprache trotzdem aktualisieren
+    return;
+  }
   ssCheckStatus(sw)
     .then(status => {
       if (pendingSwitches[mac]) return;             // inzwischen pending -> nicht ueberschreiben

@@ -96,7 +96,7 @@ docker run -d --name wol-f --network host --restart unless-stopped \
 ### Build from source
 
 ```
-git clone https://github.com/MaikiMolto/wol-f.git && cd wol-f
+git clone https://github.com/MaikiMolto/WOL-F.git && cd WOL-F
 docker build -t wol-f:latest .
 ```
 

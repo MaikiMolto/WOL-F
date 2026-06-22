@@ -43,6 +43,7 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 | Schedule | ![Schedule — dark](docs/screenshots/schedul_dark.png) | ![Schedule — light](docs/screenshots/schedul_white.png) |
 | Wake confirmation | ![Wake — dark](docs/screenshots/wake_dark.png) | ![Wake — light](docs/screenshots/wake_white.png) |
 | Shutdown confirmation | ![Shutdown — dark](docs/screenshots/shutdown_dark.png) | ![Shutdown — light](docs/screenshots/shutdown_white.png) |
+| Login | ![Login](docs/screenshots/login.png) | — |
 
 ## Quick start (Docker)
 

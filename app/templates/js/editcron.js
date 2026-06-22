@@ -208,7 +208,7 @@
     if (dayBtn) {
       dayBtn.classList.toggle('active');
       var sec = dayBtn.closest('.wf-cron-sec');
-      if (sec) updatePreview(sec.id);
+      if (sec) { [].slice.call(sec.querySelectorAll('.wf-preset')).forEach(function (b) { b.classList.remove('active'); }); updatePreview(sec.id); }
       return;
     }
     var preset = e.target.closest && e.target.closest('.wf-preset');
@@ -218,6 +218,7 @@
       var p = preset.getAttribute('data-preset');
       var map = { workdays: [1, 2, 3, 4, 5], daily: [0, 1, 2, 3, 4, 5, 6], weekend: [0, 6] };
       setDays(sec2.id, map[p] || []);
+      [].slice.call(sec2.querySelectorAll('.wf-preset')).forEach(function (b) { b.classList.toggle('active', b === preset); });
       updatePreview(sec2.id);
       return;
     }

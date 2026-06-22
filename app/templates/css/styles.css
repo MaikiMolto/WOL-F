@@ -271,7 +271,10 @@ html[data-bs-theme="light"] .wf-mode-dark{display:none}
 html[data-bs-theme="light"] .wf-mode-light{display:inline-block}
 
 /* ===== WOL-F modal theming (dark panel + WOL-F font + pill buttons) ===== */
-.modal-content{background:linear-gradient(180deg,#141a22,#10151c);border:1px solid var(--wf-border);border-radius:18px;color:var(--wf-text);font-family:'Segoe UI',-apple-system,system-ui,Roboto,sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.55);overflow:hidden}
+.modal-content{background:linear-gradient(180deg,#141a22,#10151c) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1px solid transparent;border-radius:18px;color:var(--wf-text);font-family:'Segoe UI',-apple-system,system-ui,Roboto,sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.55);overflow:hidden}
+/* Edit-Modal bewusst GRAU lassen (Maik: faerben wir spaeter separat) */
+#editComputer .modal-content{background:linear-gradient(180deg,#141a22,#10151c) padding-box;border:1px solid var(--wf-border)}
+html[data-bs-theme="light"] #editComputer .modal-content{background:linear-gradient(180deg,#ffffff,#f4f7fb) padding-box;border:1px solid #d3dae3}
 .modal-header,.modal-footer{border-color:var(--wf-border)}
 .modal-title{color:var(--wf-text);font-weight:800;letter-spacing:-.2px}
 html[data-bs-theme="light"] .modal .btn-close{filter:invert(1) grayscale(1) brightness(2)}
@@ -376,7 +379,7 @@ html[data-bs-theme="light"] .wf-joblbl{color:#5c6775}
 html[data-bs-theme="light"] .wf-joblbl b{color:#3a4654}
 html[data-bs-theme="light"] .wf-jobsw{background:#cdd5df}
 html[data-bs-theme="light"] .wf-typ{background:#dff3f8;color:#0b7d96}
-html[data-bs-theme="light"] .modal-content{background:linear-gradient(180deg,#ffffff,#f4f7fb);color:#1b2533;border-color:#d3dae3}
+html[data-bs-theme="light"] .modal-content{background:linear-gradient(180deg,#ffffff,#f4f7fb) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1px solid transparent;color:#1b2533}
 html[data-bs-theme="light"] .modal-title{color:#1b2533}
 html[data-bs-theme="light"] .modal label{color:#5c6775}
 html[data-bs-theme="light"] .modal .form-control,html[data-bs-theme="light"] .modal .form-control-plaintext,html[data-bs-theme="light"] .modal input[type=text]{background:#ffffff;border-color:#d3dae3;color:#1b2533}
@@ -404,6 +407,7 @@ html[data-bs-theme="light"] .wf-jobsw.aktiv{background:#2fb344}
 .wf-cron-sec-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--wf-text);margin-bottom:10px}
 .wf-cron-sec-title .fa-sun{color:var(--wf-pend)}
 .wf-cron-sec-title .fa-moon{color:var(--wf-accent)}
+.wf-cron-secic{width:20px;height:20px;object-fit:contain;flex:0 0 auto;vertical-align:middle}
 .wf-cron-current-row{font-size:12.5px;color:var(--wf-muted);margin-bottom:11px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .wf-cron-current-lbl{font-weight:700}
 .wf-cron-current-val{color:var(--wf-text);font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace}

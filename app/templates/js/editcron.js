@@ -186,8 +186,8 @@
     if (!content) return;
     var html = '<div class="wf-cron-device">' + esc(deviceName) + '</div>' +
       '<div class="wf-cron-builder">' +
-      sectionHTML('wfCronWol', 'wake', '<i class="fa-solid fa-sun"></i>', macAddress, 'wol', wolSchedule) +
-      sectionHTML('wfCronSol', 'sleep', '<i class="fa-solid fa-moon"></i>', macAddress, 'sol', solSchedule) +
+      sectionHTML('wfCronWol', 'wake', '<img class="wf-cron-secic" src="' + (window.wf_wake_icon || '') + '" alt="">', macAddress, 'wol', wolSchedule) +
+      sectionHTML('wfCronSol', 'sleep', '<img class="wf-cron-secic" src="' + (window.wf_sleep_icon || '') + '" alt="">', macAddress, 'sol', solSchedule) +
       '</div>';
     content.innerHTML = html;
     updatePreview('wfCronWol');

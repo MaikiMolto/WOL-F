@@ -467,3 +467,6 @@ html[data-bs-theme="light"] .wf-time-input,html[data-bs-theme="light"] .wf-time-
 .wf-search,.wf-sort .wf-sortbtn,.wf-iconbtn,.wf-lang{background:linear-gradient(#0e131a,#0e131a) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
 html[data-bs-theme="light"] .wf-topbar{background:linear-gradient(180deg,#ffffff,#eef2f8) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
 html[data-bs-theme="light"] .wf-search,html[data-bs-theme="light"] .wf-sort .wf-sortbtn,html[data-bs-theme="light"] .wf-iconbtn,html[data-bs-theme="light"] .wf-lang{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+/* Light-Mode: aktive Wochentage + Presets muessen gefuellt bleiben (sonst ueberschreibt die light .wf-day/.wf-preset bg-Regel den active-Verlauf) */
+html[data-bs-theme="light"] .wf-day.active{background:linear-gradient(135deg,#2fb344,#22d3ee);border-color:transparent;color:#04222a}
+html[data-bs-theme="light"] .wf-preset.active{background:linear-gradient(135deg,#2fb344,#22d3ee);border-color:transparent;color:#06222a}

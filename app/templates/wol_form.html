@@ -420,6 +420,7 @@
           document.querySelectorAll("[data-i18n-ph]").forEach(function(el){ var k=el.getAttribute("data-i18n-ph"); if(d[k]!=null) el.setAttribute("placeholder",d[k]); });
           document.querySelectorAll(".wf-lang span").forEach(function(sp){ sp.classList.toggle("active", sp.getAttribute("data-lang")===lang); });
           try { localStorage.setItem("wfLang",lang); } catch(e){}
+          if(window.wfPrettifyCards) window.wfPrettifyCards();
           if(window.refreshAllSwitches) window.refreshAllSwitches();
         }
         window.wfSetLang=wfSetLang;

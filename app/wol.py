@@ -173,7 +173,7 @@ def login():
       return ('Too many login attempts. Try again later.', 429)
     u = request.form.get('username', '')
     p = request.form.get('password', '')
-    if hmac.compare_digest(u, LOGIN_USERNAME) and hmac.compare_digest(p, LOGIN_PASSWORD):
+    if hmac.compare_digest(u.encode('utf-8'), LOGIN_USERNAME.encode('utf-8')) and hmac.compare_digest(p.encode('utf-8'), LOGIN_PASSWORD.encode('utf-8')):
       _login_attempts.pop(ip, None)
       session['logged_in'] = True
       session.permanent = True

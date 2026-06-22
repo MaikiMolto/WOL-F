@@ -445,7 +445,7 @@ def add_computer():
   messages = []
   # Check Entries
   if check_mac_exist(mac_address):
-    messages.append(f'Computer mac: {mac_address} already exists.')
+    messages.append(f'Device with MAC {mac_address} already exists.')
   if check_invalid_name(name):
     messages.append(f'NAME: {name} is invalid. Character , is invalid')
   if check_invalid_ip(ip_address):
@@ -455,7 +455,7 @@ def add_computer():
   if check_invalid_test_type(test_type):
     messages.append(f'Status check: {test_type} is invalid. Enter "icmp", "arp" or a valid TCP port number.')
   if messages:
-    return generate_modal_html(messages, 'Add Computer Error')
+    return generate_modal_html(messages, 'Add Device Error')
 
   new_computer = Computer(name=name, mac_address=mac_address, ip_address=ip_address, test_type=test_type, type=dev_type, link=dev_link)
   db.session.add(new_computer)
@@ -477,7 +477,7 @@ def edit_computer():
 
   messages = []
   if computer_to_edit is None:
-    messages.append(f'Computer with MAC address: {mac_address} not found.')
+    messages.append(f'Device with MAC address: {mac_address} not found.')
   if check_invalid_name(name):
     messages.append(f'NAME: {name} is invalid. Character , is invalid')
   if check_invalid_ip(ip_address):
@@ -485,11 +485,11 @@ def edit_computer():
   if check_invalid_test_type(test_type):
     messages.append(f'Status check: {test_type} is invalid. Enter "icmp", "arp" or a valid TCP port number.')
   if messages:
-    return generate_modal_html(messages, 'Edit Computer Error')
+    return generate_modal_html(messages, 'Edit Device Error')
 
   if (computer_to_edit.name == name and computer_to_edit.ip_address == ip_address and computer_to_edit.test_type == test_type and computer_to_edit.type == dev_type and computer_to_edit.link == dev_link):
     messages.append(f'No change was made.')
-    return generate_modal_html(messages, 'Edit Computer Info')
+    return generate_modal_html(messages, 'Edit Device Info')
 
   computer_to_edit.name = name
   computer_to_edit.ip_address = ip_address
@@ -588,7 +588,7 @@ def wol_or_sol_send():
 
   computer = next((c for c in computers if c['mac_address'] == mac_address), None)
   if computer is None:
-    return generate_modal_html([f'Computer with MAC address {mac_address} not found.'], 'Error'), 404
+    return generate_modal_html([f'Device with MAC address {mac_address} not found.'], 'Error'), 404
   ip_address = computer['ip_address']
   test_type = computer['test_type']
 

@@ -272,9 +272,6 @@ html[data-bs-theme="light"] .wf-mode-light{display:inline-block}
 
 /* ===== WOL-F modal theming (dark panel + WOL-F font + pill buttons) ===== */
 .modal-content{background:linear-gradient(180deg,#141a22,#10151c) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1px solid transparent;border-radius:18px;color:var(--wf-text);font-family:'Segoe UI',-apple-system,system-ui,Roboto,sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.55);overflow:hidden}
-/* Edit-Modal bewusst GRAU lassen (Maik: faerben wir spaeter separat) */
-#editComputer .modal-content{background:linear-gradient(180deg,#141a22,#10151c) padding-box;border:1px solid var(--wf-border)}
-html[data-bs-theme="light"] #editComputer .modal-content{background:linear-gradient(180deg,#ffffff,#f4f7fb) padding-box;border:1px solid #d3dae3}
 .modal-header,.modal-footer{border-color:var(--wf-border)}
 .modal-title{color:var(--wf-text);font-weight:800;letter-spacing:-.2px}
 html[data-bs-theme="light"] .modal .btn-close{filter:invert(1) grayscale(1) brightness(2)}

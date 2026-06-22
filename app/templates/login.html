@@ -15,7 +15,7 @@
          font-family:'Segoe UI',-apple-system,system-ui,Roboto,sans-serif;overflow:hidden;}
     .wf-login{width:100%;max-width:380px;padding:24px;text-align:center;animation:wffade .6s ease-out;}
     @keyframes wffade{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
-    .wf-login-logo{width:172px;height:172px;object-fit:contain;-webkit-mask-image:radial-gradient(circle at 50% 44%,#000 48%,transparent 68%);mask-image:radial-gradient(circle at 50% 44%,#000 48%,transparent 68%);
+    .wf-login-logo{width:172px;height:172px;object-fit:contain;
                    filter:drop-shadow(0 0 22px rgba(34,211,238,.45));animation:wfpulse 3.2s ease-in-out infinite;}
     @keyframes wfpulse{0%,100%{filter:drop-shadow(0 0 16px rgba(34,211,238,.30));}50%{filter:drop-shadow(0 0 36px rgba(34,211,238,.62));}}
     .wf-login-title{font-size:36px;font-weight:900;letter-spacing:2px;margin:8px 0 2px;
@@ -38,7 +38,7 @@
 </head>
 <body>
   <div class="wf-login">
-    <img class="wf-login-logo" src="{{ url_for('static', filename='images/wol-f/logo.png') }}" alt="WOL-F">
+    <img class="wf-login-logo" src="{{ url_for('static', filename='images/wol-f/logo.png') }}?v=2" alt="WOL-F">
     <div class="wf-login-title">WOL-F</div>
     <div class="wf-login-sub">Wake-On-LAN Fleet</div>
     <form class="wf-login-card" method="POST" action="{{ url_for('login') }}" autocomplete="on">

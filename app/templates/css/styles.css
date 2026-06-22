@@ -440,9 +440,9 @@ html[data-bs-theme="light"] .wf-time-input,html[data-bs-theme="light"] .wf-time-
 
 /* === Cron builder action pills (OK green / delete red) === */
 .wf-pill-sm{padding:7px 18px;font-size:13px;cursor:pointer}
-.wf-pill-ok{background:linear-gradient(180deg,#2fb344,#249536);border-color:#2fb344;color:#fff}
+.wf-pill-ok{background:linear-gradient(135deg,#2fb344,#22d3ee);border-color:transparent;color:#06222a}
 .wf-pill-ok:hover{filter:brightness(1.12)}
-.wf-pill-danger{background:linear-gradient(180deg,#e03131,#bd2626);border-color:#e03131;color:#fff}
+.wf-pill-danger{background:linear-gradient(135deg,#ef6f5a,#c02a2f);border-color:transparent;color:#fff}
 .wf-pill-danger:hover{filter:brightness(1.12)}
 
 /* === manual time entry + am/pm toggle === */

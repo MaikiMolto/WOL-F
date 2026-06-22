@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/brands.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/solid.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=43">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=45">
     <script>(function(){var m=document.querySelector('meta[name=csrf-token]');var t=m?m.content:"";var of=window.fetch;window.fetch=function(i,o){o=o||{};var me=((o&&o.method)||(i&&i.method)||"GET").toUpperCase();if(t&&me!=="GET"&&me!=="HEAD"){o.headers=new Headers(o.headers||{});if(!o.headers.has("X-CSRFToken"))o.headers.set("X-CSRFToken",t);}return of(i,o);};})();</script>
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/updatestatus.js') }}?v=1"></script>
@@ -73,6 +73,7 @@
         </ul>
       </div>
 
+      <div class="wf-menuwrap">
       <button type="button" class="wf-menubtn" id="wfMenuBtn" aria-label="Menu"><img src="{{ url_for('static', filename='images/wol-f/menu.png') }}" class="wf-menuic" alt="Menu"></button>
       <div class="wf-menu" id="wfMenu">
       <div class="wf-lang"><span class="active" data-lang="de">DE</span><span data-lang="en">EN</span></div>
@@ -90,6 +91,7 @@
       <a class="wf-iconbtn wf-aboutbtn" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal" aria-label="About" data-tipkey="tipAbout" title="About"><img class="wf-about-ic wf-about-normal" src="/templates/images/wol-f/about.png" alt="About"><img class="wf-about-ic wf-about-full" src="/templates/images/wol-f/about_full.png" alt=""></a>
       {% if enable_login %}<a class="wf-iconbtn wf-logoutbtn" href="{{ url_for('logout') }}" data-tipkey="tipLogout" title="Logout" aria-label="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>{% endif %}
 
+      </div>
       </div>
     </header>
 
@@ -339,10 +341,11 @@
           <div class="modal-body">
             <div class="text-center">
               <p><strong>WOL-F</strong> &middot; Wake-On-LAN Fleet</p>
+              <p style="color:var(--wf-muted);font-size:13px;letter-spacing:.5px;margin-top:-4px;">by MaikiMolto &amp; Nex</p>
               <p>
                 <a data-mdb-ripple-init class="text-decoration-none" href="https://github.com/Misterbabou/gptwol" target="_blank" rel="noopener noreferrer" role="button" data-mdb-ripple-color="dark">
                   <i class="fab fa-github fa-2x"></i>
-                  <span>Based on GPTWOL</span>
+                  <span>Inspired by GPTWOL</span>
                 </a>
               </p>
               <p><strong>Version:</strong> 7.1.4</p>

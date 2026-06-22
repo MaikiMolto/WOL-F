@@ -129,6 +129,8 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = os.environ.get('SESSION_COOKIE_SECURE', 'false').strip().lower() == 'true'
 db = SQLAlchemy(app)
+# Token ist die CSRF-Abwehr; Referer/Host-Kopplung lockern -> funktioniert hinter Reverse-Proxy
+app.config['WTF_CSRF_SSL_STRICT'] = False
 csrf = CSRFProtect(app)
 
 
@@ -138,17 +140,6 @@ def wf_security_headers(resp):
   resp.headers.setdefault('X-Frame-Options', 'DENY')
   resp.headers.setdefault('Referrer-Policy', 'no-referrer')
   return resp
-
-
-@app.before_request
-def csrf_protect():
-  # CSRF defense without login: reject state-changing requests whose
-  # Origin/Referer is cross-site. Non-browser clients (no Origin/Referer) pass.
-  if request.method not in ('POST', 'PUT', 'PATCH', 'DELETE'):
-    return
-  source = request.headers.get('Origin') or request.headers.get('Referer')
-  if source and urlparse(source).netloc != request.host:
-    return ('Cross-origin request blocked.', 403)
 
 
 @app.before_request

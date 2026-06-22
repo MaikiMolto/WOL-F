@@ -87,7 +87,13 @@ app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24)
 # --- Simple optional login (WOL-F) ---
 ENABLE_LOGIN = os.environ.get('ENABLE_LOGIN', 'false').strip().lower() == 'true'
 LOGIN_USERNAME = os.environ.get('USERNAME', 'admin')
-LOGIN_PASSWORD = os.environ.get('PASSWORD', 'admin')
+LOGIN_PASSWORD = os.environ.get('PASSWORD', '')
+# Fail closed: refuse to start with a default/empty password when login is enabled
+if ENABLE_LOGIN and not LOGIN_PASSWORD:
+  raise RuntimeError(
+    "ENABLE_LOGIN=true requires a non-empty PASSWORD environment variable "
+    "(refusing to start with a default/empty password)."
+  )
 WF_LANGUAGE = (os.environ.get('LANGUAGE', 'de') or 'de').strip().lower()
 if WF_LANGUAGE not in ('de', 'en'): WF_LANGUAGE = 'de'
 
@@ -307,9 +313,9 @@ def check_invalid_ip(ip):
 
 def check_invalid_mac(mac):
   # Regular expression for validating a MAC address
-  mac_pattern = r'^([0-9a-fA-F]{2}:){5}([0-9a-fA-F]{2})$'
-  # Check if the MAC address matches the pattern
-  if re.match(mac_pattern, mac):
+  mac_pattern = r'([0-9a-fA-F]{2}:){5}([0-9a-fA-F]{2})'
+  # fullmatch rejects trailing newlines / extra chars (prevents cron-line injection)
+  if re.fullmatch(mac_pattern, mac):
     return False  # Valid MAC address
   else:
     return True   # Invalid Mac address
@@ -457,6 +463,10 @@ def edit_computer():
 
 def add_cron(mac_address, request_cron):
   messages = []
+  # Validate MAC before writing to /etc/cron.d (prevents root command injection via crafted MAC)
+  if check_invalid_mac(mac_address):
+    messages.append('Invalid MAC address!')
+    return generate_modal_html(messages, 'Add Cron Error')
   # Check Entries
   if check_invalid_cron(request_cron):
     messages.append('Invalid cron expression!')

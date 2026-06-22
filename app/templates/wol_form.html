@@ -168,7 +168,7 @@
                 <button type="button" class="wf-fb" data-tipkey="tipEdit" title="Edit computer" data-bs-toggle="modal" data-bs-target="#editComputer" data-name="{{ computer.name }}" data-mac-address="{{ computer.mac_address }}" data-ip-address="{{ computer.ip_address }}" data-test-type="{{ computer.test_type }}" data-type="{{ computer.type or '' }}" data-link="{{ computer.link or '' }}">
                   <img src="{{ url_for('static', filename='images/wol-f/edit.png') }}" alt="Edit">
                 </button>
-                <button type="button" class="wf-fb danger" data-tipkey="tipTrash" title="Delete computer" data-bs-toggle="modal" data-bs-target="#staticDelete" onclick="setDeleteForm('{{ url_for('delete_computer') }}', 'mac_address', '{{ computer.mac_address }}', '{{ computer.name }}')">
+                <button type="button" class="wf-fb danger" data-tipkey="tipTrash" title="Delete computer" data-bs-toggle="modal" data-bs-target="#staticDelete" onclick='setDeleteForm("{{ url_for('delete_computer') }}", "mac_address", {{ computer.mac_address|tojson }}, {{ computer.name|tojson }})'>
                   <img src="{{ url_for('static', filename='images/wol-f/trash.png') }}" alt="Delete">
                 </button>
               </div>

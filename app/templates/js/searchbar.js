@@ -41,6 +41,7 @@ function ipToNumber(ip) {
 }
 
 function sortComputers(criteria) {
+  try { localStorage.setItem('wfSort', criteria); } catch (e) {}
   const cardsContainer = document.querySelector('.row.row-sortable');
   const cards = Array.from(cardsContainer.children); // Convert NodeList to Array
 
@@ -74,3 +75,13 @@ function sortComputers(criteria) {
   cards.forEach(card => cardsContainer.appendChild(card));
   setTimeout(function () { try { var tgl = document.querySelector('.wf-sortbtn'); if (tgl && window.bootstrap) { window.bootstrap.Dropdown.getOrCreateInstance(tgl).hide(); } var dd = document.querySelector('.wf-sort .dropdown-menu'); if (dd) dd.classList.remove('show'); } catch (e) {} }, 0);
 }
+
+// Restore the last-used sort on load (default: name)
+(function () {
+  function applyStoredSort() {
+    var s = 'name';
+    try { s = localStorage.getItem('wfSort') || 'name'; } catch (e) {}
+    if (typeof sortComputers === 'function') sortComputers(s);
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', applyStoredSort); } else { applyStoredSort(); }
+})();

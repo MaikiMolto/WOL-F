@@ -6,6 +6,7 @@ import socket
 import struct
 import subprocess
 import os
+import time
 import ipaddress
 import re
 import fcntl
@@ -94,6 +95,12 @@ if ENABLE_LOGIN and not LOGIN_PASSWORD:
     "ENABLE_LOGIN=true requires a non-empty PASSWORD environment variable "
     "(refusing to start with a default/empty password)."
   )
+if ENABLE_LOGIN and not os.environ.get('SECRET_KEY'):
+  logger.warning("ENABLE_LOGIN=true but no SECRET_KEY set: sessions reset on every restart. Set SECRET_KEY for persistent logins.")
+# Basic in-memory login rate limiting (per source IP)
+LOGIN_MAX_ATTEMPTS = int(os.environ.get('LOGIN_MAX_ATTEMPTS', '8'))
+LOGIN_WINDOW = int(os.environ.get('LOGIN_WINDOW', '300'))
+_login_attempts = {}
 WF_LANGUAGE = (os.environ.get('LANGUAGE', 'de') or 'de').strip().lower()
 if WF_LANGUAGE not in ('de', 'en'): WF_LANGUAGE = 'de'
 
@@ -102,7 +109,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('SESSION_COOKIE_SECURE', 'false').strip().lower() == 'true'
 db = SQLAlchemy(app)
+
+
+@app.after_request
+def wf_security_headers(resp):
+  resp.headers.setdefault('X-Content-Type-Options', 'nosniff')
+  resp.headers.setdefault('X-Frame-Options', 'DENY')
+  resp.headers.setdefault('Referrer-Policy', 'no-referrer')
+  return resp
 
 
 @app.before_request
@@ -135,12 +151,23 @@ def login():
     return redirect(url_for('wol_form'))
   error = False
   if request.method == 'POST':
+    ip = request.remote_addr or 'unknown'
+    now = time.time()
+    cnt, first = _login_attempts.get(ip, (0, now))
+    if now - first > LOGIN_WINDOW:
+      cnt, first = 0, now
+    if cnt >= LOGIN_MAX_ATTEMPTS:
+      logger.warning("Login rate-limited for %s", ip)
+      return ('Too many login attempts. Try again later.', 429)
     u = request.form.get('username', '')
     p = request.form.get('password', '')
     if hmac.compare_digest(u, LOGIN_USERNAME) and hmac.compare_digest(p, LOGIN_PASSWORD):
+      _login_attempts.pop(ip, None)
       session['logged_in'] = True
       session.permanent = True
       return redirect(url_for('wol_form'))
+    _login_attempts[ip] = (cnt + 1, first)
+    logger.warning("Failed login attempt from %s", ip)
     error = True
   return render_template('login.html', error=error, lang=WF_LANGUAGE)
 

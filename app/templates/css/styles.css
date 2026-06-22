@@ -140,16 +140,16 @@
 .computer-card .card::before {
   content: "";
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
+  left: -1px;
+  top: -1px;
+  bottom: -1px;
+  width: 6px;
   background: #e03131; /* default: off */
   border-top-left-radius: inherit;
   border-bottom-left-radius: inherit;
   transition: background 0.35s;
   pointer-events: none;
-  z-index: 2;
+  z-index: 5;
 }
 .computer-card .card:has(.smart-switch.on)::before      { background: #2fb344; }
 .computer-card .card:has(.smart-switch.pending)::before  { background: #f59f00; }
@@ -215,7 +215,7 @@ body{
 .wf-wrap{max-width:1320px;margin:0 auto}
 .row.row-sortable.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:18px;margin:0}
 .computer-card.wf-cardwrap{padding:0 !important;width:100%;max-width:100%;display:flex}
-.computer-card .card.wf-card{position:relative;background:linear-gradient(180deg,#141a22,#10151c) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1px solid transparent;border-radius:18px;padding:0;overflow:hidden;width:100%;flex:1;color:var(--wf-text)}
+.computer-card .card.wf-card{position:relative;background:linear-gradient(180deg,#141a22,#10151c) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1px solid transparent;border-radius:18px;padding:0;overflow:visible;width:100%;flex:1;color:var(--wf-text)}
 .wf-cbody{padding:18px 20px 12px}
 .title-sortable.wf-ch{display:flex;align-items:center;gap:14px;margin:0;padding:0}
 .wf-cname{font-size:19px;font-weight:700;display:flex;align-items:center;gap:9px;color:var(--wf-text)}
@@ -479,3 +479,10 @@ html[data-bs-theme="light"] .modal .list-group-item-action:hover,html[data-bs-th
 /* Logout-Button: roter Icon-Akzent (raus) */
 .wf-logoutbtn .fa-right-from-bracket{font-size:15px;color:#eb8a8a}
 .wf-logoutbtn:hover .fa-right-from-bracket{color:#ff7a7a}
+/* Mobile Menue-Button + aufgeklapptes Menue + Sort-Dropdown: cyan Gradient-Rahmen */
+.wf-menubtn{background:linear-gradient(#0e131a,#0e131a) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+.wf-menu.open{background:linear-gradient(#11161d,#11161d) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+.wf-sort .dropdown-menu{background:linear-gradient(#11161d,#11161d) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+html[data-bs-theme="light"] .wf-menubtn{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+html[data-bs-theme="light"] .wf-menu.open{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}
+html[data-bs-theme="light"] .wf-sort .dropdown-menu{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1.5px solid transparent}

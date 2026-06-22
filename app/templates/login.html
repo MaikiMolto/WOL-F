@@ -7,7 +7,7 @@
   <title>WOL-F · Login</title>
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/wol-f/favicon.png') }}?v=1"/>
   <link rel="icon" href="{{ url_for('static', filename='images/wol-f/favicon.png') }}?v=1" type="image/png"/>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=40">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=45">
   <style>
     html,body{height:100%;}
     body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
@@ -48,7 +48,6 @@
       <input type="password" name="password" placeholder="{% if lang == 'en' %}Password{% else %}Passwort{% endif %}" autocomplete="current-password" required>
       <button class="wf-login-btn" type="submit">{% if lang == 'en' %}Sign in{% else %}Anmelden{% endif %}</button>
     </form>
-    <div class="wf-login-foot">🔒 {% if lang == 'en' %}Protected access{% else %}Geschützter Zugang{% endif %}</div>
   </div>
 </body>
 </html>

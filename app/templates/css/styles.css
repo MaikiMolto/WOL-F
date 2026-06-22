@@ -140,16 +140,16 @@
 .computer-card .card::before {
   content: "";
   position: absolute;
-  left: -1px;
-  top: -1px;
-  bottom: -1px;
-  width: 6px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
   background: #e03131; /* default: off */
   border-top-left-radius: inherit;
   border-bottom-left-radius: inherit;
   transition: background 0.35s;
   pointer-events: none;
-  z-index: 5;
+  z-index: 2;
 }
 .computer-card .card:has(.smart-switch.on)::before      { background: #2fb344; }
 .computer-card .card:has(.smart-switch.pending)::before  { background: #f59f00; }
@@ -198,7 +198,7 @@ body{
 .wf-search .search-input::placeholder{color:var(--wf-muted)}
 .wf-clear{background:transparent;border:none;color:var(--wf-muted);cursor:pointer;font-size:12px;padding:0 2px;line-height:1}
 .wf-clear:hover{color:var(--wf-text)}
-.wf-sort .wf-sortbtn{background:#0e131a;border:1px solid var(--wf-border);color:var(--wf-muted);border-radius:11px;padding:8px 11px}
+.wf-sort .wf-sortbtn{background:#0e131a;border:1px solid var(--wf-border);color:var(--wf-muted);border-radius:11px;padding:0;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center}
 .wf-sort .wf-sortbtn:hover{color:var(--wf-text)}
 .wf-sort .dropdown-toggle::after{display:none}
 .wf-lang{display:flex;border:1px solid var(--wf-border);border-radius:10px;overflow:hidden}
@@ -215,7 +215,7 @@ body{
 .wf-wrap{max-width:1320px;margin:0 auto}
 .row.row-sortable.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:18px;margin:0}
 .computer-card.wf-cardwrap{padding:0 !important;width:100%;max-width:100%;display:flex}
-.computer-card .card.wf-card{position:relative;background:linear-gradient(180deg,#141a22,#10151c) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1px solid transparent;border-radius:18px;padding:0;overflow:visible;width:100%;flex:1;color:var(--wf-text)}
+.computer-card .card.wf-card{position:relative;background:linear-gradient(180deg,#141a22,#10151c) padding-box,linear-gradient(135deg,#2fb344,#22d3ee) border-box;border:1px solid transparent;border-radius:18px;padding:0;overflow:hidden;width:100%;flex:1;color:var(--wf-text)}
 .wf-cbody{padding:18px 20px 12px}
 .title-sortable.wf-ch{display:flex;align-items:center;gap:14px;margin:0;padding:0}
 .wf-cname{font-size:19px;font-weight:700;display:flex;align-items:center;gap:9px;color:var(--wf-text)}
@@ -261,7 +261,7 @@ body{padding:18px 16px 46px}
 .wf-allbtn{padding:7px 11px;font-size:12.5px;gap:6px}
 .wf-lang span{padding:7px 9px;font-size:12.5px}
 .wf-add{padding:8px 13px;font-size:13.5px;height:36px}
-.wf-iconbtn{width:36px;height:36px}
+.wf-iconbtn,.wf-sort .wf-sortbtn{width:36px;height:36px}
 .wf-brand,.wf-stats,.wf-allbtns,.wf-lang,.wf-sort,.wf-add,.wf-iconbtn{flex-shrink:0}
 .wf-search{flex:1 1 auto;min-width:90px}
 .wf-search .search-input{width:auto;min-width:50px;flex:1 1 auto}

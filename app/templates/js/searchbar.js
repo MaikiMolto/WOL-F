@@ -1,5 +1,5 @@
 function wfCardData(card) {
-  const sw = card.querySelector('.wf-switch');
+  const sw = card.querySelector('.smart-switch');
   const nameEl = card.querySelector('.title-sortable .sortable');
   return {
     name: (nameEl ? nameEl.textContent : '').trim(),
@@ -72,4 +72,5 @@ function sortComputers(criteria) {
   // Clear the current cards and append sorted cards
   cardsContainer.innerHTML = '';
   cards.forEach(card => cardsContainer.appendChild(card));
+  setTimeout(function () { try { var tgl = document.querySelector('.wf-sortbtn'); if (tgl && window.bootstrap) { window.bootstrap.Dropdown.getOrCreateInstance(tgl).hide(); } var dd = document.querySelector('.wf-sort .dropdown-menu'); if (dd) dd.classList.remove('show'); } catch (e) {} }, 0);
 }

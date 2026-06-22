@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/brands.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/solid.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=34">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=35">
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/updatestatus.js') }}?v=1"></script>
     <script>
@@ -316,6 +316,7 @@
             <ul id="arpScanResults" class="list-group" style="display: none;"></ul>
           </div>
           <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-target="#addComputer" data-bs-toggle="modal" data-bs-dismiss="modal" data-i18n="mCancel">Abbrechen</button>
             <button type="button" class="btn btn-success" data-bs-target="#addComputer" data-bs-toggle="modal" data-bs-dismiss="modal" data-i18n="mValidate">Übernehmen</button>
           </div>
         </div>

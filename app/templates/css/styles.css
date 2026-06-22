@@ -470,3 +470,7 @@ html[data-bs-theme="light"] .wf-search,html[data-bs-theme="light"] .wf-sort .wf-
 /* Light-Mode: aktive Wochentage + Presets muessen gefuellt bleiben (sonst ueberschreibt die light .wf-day/.wf-preset bg-Regel den active-Verlauf) */
 html[data-bs-theme="light"] .wf-day.active{background:linear-gradient(135deg,#2fb344,#22d3ee);border-color:transparent;color:#04222a}
 html[data-bs-theme="light"] .wf-preset.active{background:linear-gradient(135deg,#2fb344,#22d3ee);border-color:transparent;color:#06222a}
+/* Light-Mode: Netzwerk-scannen-Button + ARP-Scan-Ergebnisse hell (waren hardcoded #0e131a) */
+html[data-bs-theme="light"] .modal .btn-primary{background:#ffffff;border-color:rgba(11,125,150,.45);color:#0b7d96}
+html[data-bs-theme="light"] .modal .list-group-item{background:#ffffff;color:#1b2533;border-color:#d3dae3}
+html[data-bs-theme="light"] .modal .list-group-item-action:hover,html[data-bs-theme="light"] .modal .list-group-item.active{background:#dff3f8;border-color:var(--wf-accent);color:#0b7d96}

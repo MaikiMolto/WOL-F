@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/brands.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fontawesome/css/solid.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=25">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}?v=26">
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/updatestatus.js') }}?v=1"></script>
     <script>
@@ -167,7 +167,7 @@
                 <button type="button" class="wf-fb" data-tipkey="tipEdit" title="Edit computer" data-bs-toggle="modal" data-bs-target="#editComputer" data-name="{{ computer.name }}" data-mac-address="{{ computer.mac_address }}" data-ip-address="{{ computer.ip_address }}" data-test-type="{{ computer.test_type }}" data-type="{{ computer.type or '' }}" data-link="{{ computer.link or '' }}">
                   <img src="{{ url_for('static', filename='images/wol-f/edit.png') }}" alt="Edit">
                 </button>
-                <button type="button" class="wf-fb danger" data-tipkey="tipTrash" title="Delete computer" data-bs-toggle="modal" data-bs-target="#staticDelete" onclick="setDeleteForm('{{ url_for('delete_computer') }}', 'mac_address', '{{ computer.mac_address }}', 'Computer {{ computer.name }}')">
+                <button type="button" class="wf-fb danger" data-tipkey="tipTrash" title="Delete computer" data-bs-toggle="modal" data-bs-target="#staticDelete" onclick="setDeleteForm('{{ url_for('delete_computer') }}', 'mac_address', '{{ computer.mac_address }}', '{{ computer.name }}')">
                   <img src="{{ url_for('static', filename='images/wol-f/trash.png') }}" alt="Delete">
                 </button>
               </div>
@@ -277,6 +277,10 @@
           </div>
           <div class="modal-body">
             <div id="cronSettingsContent"></div>
+            <div class="wf-cron-help">
+              <strong data-i18n="cronHelpLbl">Hilfe:</strong>
+              <a href="https://github.com/Misterbabou/gptwol#configure-sleep-on-lan" target="_blank" rel="noopener noreferrer" data-i18n="cronHelpSol">Sleep on LAN einrichten ↗</a>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="mClose">Schließen</button>
@@ -380,8 +384,8 @@
         function getLang(){ try { return localStorage.getItem("wfLang") || "de"; } catch(e){ return "de"; } }
         window.wfGetLang = getLang;
         var dict = {
-          de: { wakeAll:"Alle wecken", sleepAll:"Alle schlafen", addDevice:"Ger\u00e4t", scheduleOff:"Schedule aus", searchPh:"Suche Name, MAC, IP", sortName:"Nach Name", sortIp:"Nach IP", sortMac:"Nach MAC", mAddTitle:"Gerät hinzufügen", mEditTitle:"Gerät bearbeiten", mCronTitle:"Wecken/Schlafen planen", mDelTitle:"Löschen bestätigen", mArpTitle:"Gerät auswählen", mAboutTitle:"Über", mName:"Name:", mMac:"MAC-Adresse:", mIp:"IP-Adresse:", mCheck:"Status-Prüfung:", mType:"Gerätetyp (optional):", mLink:"Web-UI-Link (optional):", mScan:"Netzwerk scannen", mCancel:"Abbrechen", mAdd:"Hinzufügen", mSave:"Speichern", mClose:"Schließen", mDelete:"Löschen", mValidate:"Übernehmen", mDelConfirm:"Wirklich löschen:", mScanning:"Scanne läuft …", schedPaused:"pausiert", phType:"z.B. SRV, NAS, PC" },
-          en: { wakeAll:"Wake all", sleepAll:"Sleep all", addDevice:"Device", scheduleOff:"Schedule off", searchPh:"Search name, MAC, IP", sortName:"Sort by Name", sortIp:"Sort by IP", sortMac:"Sort by MAC", mAddTitle:"Add Computer", mEditTitle:"Edit Computer", mCronTitle:"Schedule Wake or Sleep", mDelTitle:"Confirm Deletion", mArpTitle:"Select a Device", mAboutTitle:"About", mName:"Name:", mMac:"MAC address:", mIp:"IP address:", mCheck:"Status Check:", mType:"Device type (optional):", mLink:"Web-UI-Link (optional):", mScan:"Scan Network", mCancel:"Cancel", mAdd:"Add", mSave:"Save", mClose:"Close", mDelete:"Delete", mValidate:"Validate", mDelConfirm:"Really delete:", mScanning:"Scanning in progress …", schedPaused:"paused", phType:"e.g. SRV, NAS, PC" }
+          de: { wakeAll:"Alle wecken", sleepAll:"Alle schlafen", addDevice:"Ger\u00e4t", scheduleOff:"Schedule aus", searchPh:"Suche Name, MAC, IP", sortName:"Nach Name", sortIp:"Nach IP", sortMac:"Nach MAC", mAddTitle:"Gerät hinzufügen", mEditTitle:"Gerät bearbeiten", mCronTitle:"Wecken/Schlafen planen", mDelTitle:"Löschen bestätigen", mArpTitle:"Gerät auswählen", mAboutTitle:"Über", mName:"Name:", mMac:"MAC-Adresse:", mIp:"IP-Adresse:", mCheck:"Status-Prüfung:", mType:"Gerätetyp (optional):", mLink:"Web-UI-Link (optional):", mScan:"Netzwerk scannen", mCancel:"Abbrechen", mAdd:"Hinzufügen", mSave:"Speichern", mClose:"Schließen", mDelete:"Löschen", mValidate:"Übernehmen", mDelConfirm:"Wirklich löschen:", mScanning:"Scanne läuft …", schedPaused:"pausiert", phType:"z.B. SRV, NAS, PC", cronHelpLbl:"Hilfe:", cronHelpSol:"Sleep on LAN einrichten \u2197" },
+          en: { wakeAll:"Wake all", sleepAll:"Sleep all", addDevice:"Device", scheduleOff:"Schedule off", searchPh:"Search name, MAC, IP", sortName:"Sort by Name", sortIp:"Sort by IP", sortMac:"Sort by MAC", mAddTitle:"Add Computer", mEditTitle:"Edit Computer", mCronTitle:"Schedule Wake or Sleep", mDelTitle:"Confirm Deletion", mArpTitle:"Select a Device", mAboutTitle:"About", mName:"Name:", mMac:"MAC address:", mIp:"IP address:", mCheck:"Status Check:", mType:"Device type (optional):", mLink:"Web-UI-Link (optional):", mScan:"Scan Network", mCancel:"Cancel", mAdd:"Add", mSave:"Save", mClose:"Close", mDelete:"Delete", mValidate:"Validate", mDelConfirm:"Really delete:", mScanning:"Scanning in progress …", schedPaused:"paused", phType:"e.g. SRV, NAS, PC", cronHelpLbl:"Help:", cronHelpSol:"Configure Sleep on Lan \u2197" }
         };
         function wfUpdateStats(){ var on=document.querySelectorAll(".smart-switch.on").length, off=document.querySelectorAll(".smart-switch.off").length; var a=document.getElementById("statOnline"), b=document.getElementById("statOffline"); if(a)a.textContent=on; if(b)b.textContent=off; }
         setInterval(wfUpdateStats,1200); window.addEventListener("load",wfUpdateStats);

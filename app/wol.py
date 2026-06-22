@@ -661,6 +661,23 @@ def ensure_columns():
       con.close()
 
 with app.app_context():
-  db.create_all()
-  migrate_txt_to_db()
-  ensure_columns()
+  # Serialize first-run schema init across gunicorn workers (avoid create_all race on a fresh DB)
+  _init_lock = None
+  try:
+    _init_lock = open('/app/db/.init.lock', 'w')
+    fcntl.flock(_init_lock, fcntl.LOCK_EX)
+  except Exception:
+    _init_lock = None
+  try:
+    db.create_all()
+    migrate_txt_to_db()
+    ensure_columns()
+  except Exception as e:
+    logger.warning(f"DB init issue (ignored): {e}")
+  finally:
+    if _init_lock is not None:
+      try:
+        fcntl.flock(_init_lock, fcntl.LOCK_UN)
+        _init_lock.close()
+      except Exception:
+        pass

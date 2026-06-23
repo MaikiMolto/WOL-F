@@ -64,7 +64,7 @@ services:
     restart: unless-stopped
     environment:
       - TZ=Europe/Berlin
-      #- PORT=5000              # Web UI port; default 5000
+      #- PORT=2600              # Web UI port; default 2600
       #- IP=0.0.0.0             # listen address
       #- LANGUAGE=de            # de | en ; default de
       #- ENABLE_LOGIN=false     # single-user login
@@ -101,7 +101,7 @@ docker compose up -d
 
 ```
 docker run -d --name wol-f --network host --restart unless-stopped \
-  -e TZ=Europe/Berlin -e PORT=5000 \
+  -e TZ=Europe/Berlin -e PORT=2600 \
   -v ./appdata/db:/app/db -v ./appdata/cron:/etc/cron.d \
   maikimolto/wol-f:latest
 ```
@@ -118,7 +118,7 @@ docker build -t wol-f:latest .
 | Variable | Default | Description |
 | --- | --- | --- |
 | `TZ` | `UTC` | Timezone (used for cron) |
-| `PORT` | `5000` | Web UI port |
+| `PORT` | `2600` | Web UI port |
 | `IP` | `0.0.0.0` | Listen address (IPv4/IPv6) |
 | `LANGUAGE` | `de` | UI default language (`de` / `en`) |
 | `LOG_LEVEL` | `INFO` | `DEBUG` / `INFO` / `WARN` / `ERROR` |

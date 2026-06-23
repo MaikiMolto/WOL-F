@@ -188,6 +188,11 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 # When the app serves HTTPS itself (ENABLE_HTTPS), mark the session cookie Secure automatically
 _wf_https = os.environ.get('ENABLE_HTTPS', 'false').strip().lower() == 'true'
 app.config['SESSION_COOKIE_SECURE'] = _wf_https or (os.environ.get('SESSION_COOKIE_SECURE', 'false').strip().lower() == 'true')
+# Browsers scope cookies by HOST, not port -> two WOL-F instances on the same host
+# (e.g. :2600 and :2601) would otherwise share/overwrite the same 'session' cookie and
+# break each other's CSRF/session. Namespace the cookie per instance (by PORT, overridable).
+_wf_port = (os.environ.get('PORT', '') or '').strip()
+app.config['SESSION_COOKIE_NAME'] = os.environ.get('SESSION_COOKIE_NAME') or (('wolf_session_' + _wf_port) if _wf_port else 'wolf_session')
 # Fail closed: HTTPS ohne Login wuerde ungeschuetzte Geraetesteuerung exponieren -> Start verweigern
 if _wf_https and not ENABLE_LOGIN:
   raise RuntimeError(

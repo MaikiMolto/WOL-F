@@ -14,18 +14,34 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 
 > **Inspired by [GPTWOL](https://github.com/Misterbabou/gptwol)** (MIT © Misterbabou). WOL-F is a heavily reworked fork: redesigned UI, full DE/EN i18n, security hardening (CSRF tokens, security headers, login rate-limiting, persistent secret key), optional built-in HTTPS, mobile fixes and more.
 
+## ✨ Highlights
+
+- 🎨 **Modern redesigned UI** — polished dark & light theme, fully responsive (desktop + mobile), **DE / EN** with live language switching
+- 🧙 **Beginner-friendly scheduler** — automate wake & shutdown without touching cron: presets (weekdays · daily · weekend), weekday toggles and a simple time picker
+- 🔒 **Security-first by design** — CSRF protection, hardened session cookies, **persistent rate-limiting** (SQLite, shared across workers) and a **fail-closed rule: HTTPS *requires* login**
+- 📡 **Your whole LAN in one view** — live status (ICMP / ARP / TCP), built-in **ARP scanner** to discover devices, plus search & sort
+- 🪶 **Self-hosted & tiny** — one container, ~20 MB RAM, no cloud, no account, no telemetry
+
 ## Features
 
+**Core**
 - 🔌 **Wake-on-LAN** — send magic packets to wake computers
 - 😴 **Sleep-on-LAN** — shut computers down (via [SR-G/sleep-on-lan](https://github.com/SR-G/sleep-on-lan))
-- ⏰ **Scheduling** — per-device wake/sleep cron schedules via a beginner-friendly builder (presets, weekdays, time)
-- 📡 **Status checks** — ICMP ping, ARP or TCP port (configurable timeouts)
+- 📡 **Live status** — ICMP ping, ARP or TCP port checks (configurable timeouts)
 - 🔍 **ARP network scan** to discover & add devices
-- ➕ **Add / edit / delete** devices (toggleable)
-- 🔎 **Search** by name, MAC or IP · **Sort** by name / IP / MAC
-- 🌗 **Dark & light mode** · 🌍 **DE / EN** with live switching
-- 🔐 **Optional login** (single user) — CSRF-protected, rate-limited, hardened session cookie
+- ➕ **Add / edit / delete** devices · 🔎 **search** by name/MAC/IP · **sort** by name/IP/MAC
+
+**Scheduling**
+- ⏰ **Beginner-friendly cron builder** — presets (weekdays/daily/weekend), weekday toggles & time picker; no cron syntax required (expert cron still available)
+
+**Security & access**
+- 🔐 **Optional login** (single user) — CSRF-protected, **rate-limited (persistent, SQLite-backed)**, hardened session cookie
 - 🔒 **Optional built-in HTTPS** — self-signed cert auto-generated, no reverse proxy required
+- 🛡️ **HTTPS enforces login** — WOL-F **refuses to start** if HTTPS is enabled but login is off → no unauthenticated device control over HTTPS
+- 🔑 **Persistent secret key** — stable sessions across restarts (race-safe on fresh installs)
+
+**Experience**
+- 🌗 **Dark & light mode** · 🌍 **DE / EN** live switching
 - 📱 Responsive (desktop + mobile), low footprint (~20 MB RAM)
 
 ## Screenshots
@@ -53,8 +69,11 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 > - Make sure BIOS/OS is configured to allow Wake-on-LAN.
 > - Don't expose WOL-F to the internet without protection — enable login + HTTPS, or put it behind a reverse proxy.
 
-### docker compose (recommended)
+### Deploy with Docker Compose / Portainer
 
+Paste one of these stacks into **Portainer → Stacks → Add stack**, or save it as `compose.yaml` and run `docker compose up -d`. Image is published on Docker Hub as `maikimolto/wol-f:latest`.
+
+**🔓 Minimal — HTTP on your LAN**
 ```yaml
 services:
   wol-f:
@@ -64,38 +83,35 @@ services:
     restart: unless-stopped
     environment:
       - TZ=Europe/Berlin
-      #- PORT=2600              # Web UI port; default 2600
-      #- IP=0.0.0.0             # listen address
-      #- LANGUAGE=de            # de | en ; default de
-      #- ENABLE_LOGIN=false     # single-user login
-      #- USERNAME=admin
-      #- PASSWORD=              # REQUIRED when ENABLE_LOGIN=true (no default)
-      #- SECRET_KEY=            # Flask secret; auto-persisted in /app/db if unset
-      #- ENABLE_HTTPS=false     # serve HTTPS directly (self-signed, no proxy needed)
-      #- SSL_CERT=/app/db/wol-f-cert.pem
-      #- SSL_KEY=/app/db/wol-f-key.pem
-      #- SESSION_COOKIE_SECURE=false   # auto-on when ENABLE_HTTPS=true
-      #- ENABLE_ADD_DEL=true
-      #- ENABLE_REFRESH=true
-      #- REFRESH_INTERVAL=30
-      #- PING_TIMEOUT=300
-      #- ARP_INTERFACE=eth0
-      #- ARP_TIMEOUT=300
-      #- TCP_TIMEOUT=1
-      #- ENABLE_L2_WOL_PACKET=false
-      #- L2_INTERFACE=eth0
-      #- SCRIPT_NAME=/my-app    # run under a subpath
-      #- LOG_LEVEL=INFO
-      #- GUNICORN_WORKERS=3
-      #- GUNICORN_THREADS=2
-      #- GUNICORN_TIMEOUT=60
+      - PORT=2600
+      - LANGUAGE=de
     volumes:
       - ./appdata/db:/app/db
       - ./appdata/cron:/etc/cron.d
 ```
+
+**🔒 Recommended — HTTPS + login (built-in self-signed cert)**
+```yaml
+services:
+  wol-f:
+    container_name: wol-f
+    image: maikimolto/wol-f:latest
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Berlin
+      - PORT=2601
+      - LANGUAGE=de
+      - ENABLE_HTTPS=true         # serve HTTPS directly (self-signed cert auto-generated)
+      - ENABLE_LOGIN=true         # REQUIRED whenever HTTPS is enabled
+      - USERNAME=admin
+      - PASSWORD=change-me-please  # set a strong password!
+    volumes:
+      - ./appdata/db:/app/db
+      - ./appdata/cron:/etc/cron.d
 ```
-docker compose up -d
-```
+
+> ℹ️ All available options are listed under [Configuration](#configuration).
 
 ### docker run
 
@@ -126,7 +142,7 @@ docker build -t wol-f:latest .
 | `USERNAME` | `admin` | Login username |
 | `PASSWORD` | — | **Required when `ENABLE_LOGIN=true`** (app refuses to start without it) |
 | `SECRET_KEY` | _auto_ | Flask secret for sessions/CSRF; auto-persisted in `/app/db` if unset |
-| `ENABLE_HTTPS` | `false` | Serve HTTPS directly with a self-signed cert (no reverse proxy needed) |
+| `ENABLE_HTTPS` | `false` | Serve HTTPS directly with a self-signed cert (no reverse proxy needed) · **requires `ENABLE_LOGIN=true`** |
 | `SSL_CERT` / `SSL_KEY` | `/app/db/wol-f-*.pem` | Custom TLS cert/key (used with `ENABLE_HTTPS`; auto-generated if missing) |
 | `SESSION_COOKIE_SECURE` | `false` | Send session cookie only over HTTPS (auto-on with `ENABLE_HTTPS`) |
 | `ENABLE_ADD_DEL` | `true` | Show add/delete buttons |
@@ -144,6 +160,9 @@ docker build -t wol-f:latest .
 | `GUNICORN_TIMEOUT` | `60` | Worker timeout (s) |
 
 ## Access & HTTPS
+
+> [!IMPORTANT]
+> **HTTPS enforces authentication.** Enabling `ENABLE_HTTPS=true` **requires** `ENABLE_LOGIN=true` — otherwise WOL-F refuses to start. Your device-control panel is never served over HTTPS without a login.
 
 By default WOL-F serves plain **HTTP** on `PORT`. Three ways to reach it:
 

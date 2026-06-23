@@ -44,7 +44,7 @@ COPY --from=builder /install /usr/local
 COPY --from=builder /app /app
 
 # Default ENV
-ENV PORT=2600 \
+ENV PORT=2601 \
     IP=0.0.0.0
 
 WORKDIR /app

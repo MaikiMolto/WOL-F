@@ -17,6 +17,7 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 ## ✨ Highlights
 
 - 🎨 **Modern redesigned UI** — polished dark & light theme, fully responsive (desktop + mobile), **DE / EN** with live language switching
+- 🎚️ **Smart status switches** — every device has a sliding toggle that *is* its live status (online · offline · booting · shutting down) and wakes or sleeps it with a single flip
 - 🧙 **Beginner-friendly scheduler** — automate wake & shutdown without touching cron: presets (weekdays · daily · weekend), weekday toggles and a simple time picker
 - 🔒 **Security-first by design** — CSRF protection, hardened session cookies, **persistent rate-limiting** (SQLite, shared across workers) and a **fail-closed rule: HTTPS *requires* login**
 - 📡 **Your whole LAN in one view** — live status (ICMP / ARP / TCP), built-in **ARP scanner** to discover devices, plus search & sort
@@ -27,6 +28,7 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 **Core**
 - 🔌 **Wake-on-LAN** — send magic packets to wake computers
 - 😴 **Sleep-on-LAN** — shut computers down (via [SR-G/sleep-on-lan](https://github.com/SR-G/sleep-on-lan))
+- 🎚️ **Smart per-device switch** — flip to wake/sleep with a live *pending* animation (booting / shutting down); plus **bulk wake / bulk shutdown** for the whole fleet at once
 - 📡 **Live status** — ICMP ping, ARP or TCP port checks (configurable timeouts)
 - 🔍 **ARP network scan** to discover & add devices
 - ➕ **Add / edit / delete** devices · 🔎 **search** by name/MAC/IP · **sort** by name/IP/MAC

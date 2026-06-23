@@ -29,11 +29,11 @@
       const toggle_cron_url = "{{ url_for('toggle_cron') }}";
       function toggleCron(mac, btn){ fetch(toggle_cron_url,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"mac_address="+encodeURIComponent(mac)}).then(function(r){return r.json();}).then(function(d){ var paused=d.paused; if(!btn) return; btn.classList.toggle("aktiv", !paused); var foot=btn.closest(".wf-foot"); var lbl=foot?foot.querySelector(".wf-joblbl"):null; if(lbl){ var ex=lbl.querySelector(".wf-paused"); if(paused){ if(!ex){ var dv=document.createElement("div"); dv.className="wf-paused"; dv.setAttribute("data-i18n","schedPaused"); dv.textContent=(window.wfGetLang&&window.wfGetLang()==="en")?"paused":"pausiert"; lbl.appendChild(dv);} } else { if(ex) ex.remove(); } } }).catch(function(e){}); }
 
-      {% if os.environ.get('ENABLE_REFRESH') != 'false' -%}
+      {% if enable_refresh -%}
         setInterval(() => {
           // Update the status of all computers (smart switches)
           if (window.refreshAllSwitches) window.refreshAllSwitches();
-        }, {{ [(os.environ.get('REFRESH_INTERVAL', '30') | int), 5] | max * 1000 }});
+        }, {{ refresh_interval_ms }});
       {% endif -%}
     </script>
   </head>
@@ -84,7 +84,7 @@
         <input class="form-check-input wf-hidden-check" type="checkbox" id="darkModeSwitch" checked aria-label="Switch between light and dark mode">
       </button>
 
-      {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
+      {% if enable_add_del -%}
       <button type="button" class="wf-add" data-tipkey="tipAdd" data-bs-toggle="modal" data-bs-target="#addComputer" aria-label="AddComputer">+ <span data-i18n="addDevice">Gerät</span></button>
       {% endif -%}
 
@@ -151,7 +151,7 @@
               </div>
             </div>
 
-            {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
+            {% if enable_add_del -%}
             <div class="card-footer wf-foot">
               {% if computer.cron_wol_schedule is defined or computer.cron_sol_schedule is defined -%}
               <button type="button" class="wf-jobsw{% if not computer.cron_paused %} aktiv{% endif %}" data-tipkey="tipJob" title="Zeitplan pausieren" onclick="toggleCron('{{ computer.mac_address }}', this)"><span class="k"></span></button>
@@ -185,7 +185,7 @@
     </main>
 
      <!-- Modal -->
-    {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
+    {% if enable_add_del -%}
     <div class="modal fade" id="addComputer" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addComputerLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -355,7 +355,7 @@
       </div>
     </div>
 
-    {% if os.environ.get('ENABLE_ADD_DEL') != 'false' -%}
+    {% if enable_add_del -%}
     <script src="{{ url_for('static', filename='js/editcomputer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/editcron.js') }}?v=20"></script>
     <script src="{{ url_for('static', filename='js/delcomputer.js') }}?v=2"></script>

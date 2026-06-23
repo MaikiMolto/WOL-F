@@ -121,6 +121,10 @@ LOGIN_WINDOW = int(os.environ.get('LOGIN_WINDOW', '300'))
 _login_attempts = {}
 WF_LANGUAGE = (os.environ.get('LANGUAGE', 'de') or 'de').strip().lower()
 if WF_LANGUAGE not in ('de', 'en'): WF_LANGUAGE = 'de'
+# Feature-Flags explizit ans Template (statt das ganze os-Modul -> kein env-Leak in Jinja-Scope)
+WF_ENABLE_REFRESH = os.environ.get('ENABLE_REFRESH') != 'false'
+WF_REFRESH_INTERVAL_MS = max(int(os.environ.get('REFRESH_INTERVAL', '30') or 30), 5) * 1000
+WF_ENABLE_ADD_DEL = os.environ.get('ENABLE_ADD_DEL') != 'false'
 
 db_path = '/app/db/computers.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
@@ -421,7 +425,7 @@ def delete_cron_entry(request_mac_address):
 @app.route('/')
 def wol_form():
   computers = load_computers()
-  return render_template('wol_form.html', computers=computers, is_computer_awake=lambda *_: "asleep", os=os, enable_login=ENABLE_LOGIN, lang=WF_LANGUAGE)
+  return render_template('wol_form.html', computers=computers, is_computer_awake=lambda *_: "asleep", enable_login=ENABLE_LOGIN, lang=WF_LANGUAGE, enable_refresh=WF_ENABLE_REFRESH, refresh_interval_ms=WF_REFRESH_INTERVAL_MS, enable_add_del=WF_ENABLE_ADD_DEL)
 
 @app.route('/delete_computer', methods=['POST'])
 def delete_computer():

@@ -21,7 +21,7 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 - 🧙 **Beginner-friendly scheduler** — automate wake & shutdown without touching cron: presets (weekdays · daily · weekend), weekday toggles and a simple time picker
 - 🔒 **Security-first by design** — CSRF protection, hardened session cookies, **persistent rate-limiting** (SQLite, shared across workers) and a **fail-closed rule: HTTPS *requires* login**
 - 📡 **Your whole LAN in one view** — live status (ICMP / ARP / TCP), built-in **ARP scanner** to discover devices, plus search & sort
-- 🪶 **Self-hosted & tiny** — one container, ~20 MB RAM, no cloud, no account, no telemetry
+- 🪶 **Self-hosted & lightweight** — one container, ~180 MB RAM (3 gunicorn workers, tunable lower), no cloud, no account, no telemetry
 
 ## Features
 
@@ -44,7 +44,7 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 
 **Experience**
 - 🌗 **Dark & light mode** · 🌍 **DE / EN** live switching
-- 📱 Responsive (desktop + mobile), low footprint (~20 MB RAM)
+- 📱 Responsive (desktop + mobile), modest footprint (~180 MB RAM, 3 workers — less with fewer)
 
 ## Screenshots
 
@@ -73,14 +73,14 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 
 ### Deploy with Docker Compose / Portainer
 
-Paste one of these stacks into **Portainer → Stacks → Add stack**, or save it as `compose.yaml` and run `docker compose up -d`. The stacks pull the image straight from **Docker Hub** (`maikimolto/wol-f:latest`) — no build needed. Prefer building yourself? See [Build from source](#build-from-source).
+Paste one of these stacks into **Portainer → Stacks → Add stack**, or save it as `compose.yaml` and run `docker compose up -d`. The stacks pull the image straight from **GitHub Container Registry** (`ghcr.io/maikimolto/wol-f:latest`) — no build needed. Prefer building yourself? See [Build from source](#build-from-source).
 
 **🔓 Minimal — HTTP on your LAN**
 ```yaml
 services:
   wol-f:
     container_name: wol-f
-    image: maikimolto/wol-f:latest
+    image: ghcr.io/maikimolto/wol-f:latest
     network_mode: host
     restart: unless-stopped
     environment:
@@ -97,7 +97,7 @@ services:
 services:
   wol-f:
     container_name: wol-f
-    image: maikimolto/wol-f:latest
+    image: ghcr.io/maikimolto/wol-f:latest
     network_mode: host
     restart: unless-stopped
     environment:
@@ -121,7 +121,7 @@ services:
 docker run -d --name wol-f --network host --restart unless-stopped \
   -e TZ=Europe/Berlin -e PORT=2600 \
   -v ./appdata/db:/app/db -v ./appdata/cron:/etc/cron.d \
-  maikimolto/wol-f:latest
+  ghcr.io/maikimolto/wol-f:latest
 ```
 
 ### Build from source

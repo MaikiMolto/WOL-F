@@ -130,6 +130,11 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 # When the app serves HTTPS itself (ENABLE_HTTPS), mark the session cookie Secure automatically
 _wf_https = os.environ.get('ENABLE_HTTPS', 'false').strip().lower() == 'true'
 app.config['SESSION_COOKIE_SECURE'] = _wf_https or (os.environ.get('SESSION_COOKIE_SECURE', 'false').strip().lower() == 'true')
+# Fail closed: HTTPS ohne Login wuerde ungeschuetzte Geraetesteuerung exponieren -> Start verweigern
+if _wf_https and not ENABLE_LOGIN:
+  raise RuntimeError(
+    "ENABLE_HTTPS=true requires ENABLE_LOGIN=true (refusing to serve WOL-F over HTTPS without authentication)."
+  )
 db = SQLAlchemy(app)
 # Token ist die CSRF-Abwehr; Referer/Host-Kopplung lockern -> funktioniert hinter Reverse-Proxy
 app.config['WTF_CSRF_SSL_STRICT'] = False

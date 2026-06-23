@@ -21,7 +21,7 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 - 🧙 **Beginner-friendly scheduler** — automate wake & shutdown without touching cron: presets (weekdays · daily · weekend), weekday toggles and a simple time picker
 - 🔒 **Security-first by design** — CSRF protection, hardened session cookies, **persistent rate-limiting** (SQLite, shared across workers) and a **fail-closed rule: HTTPS *requires* login**
 - 📡 **Your whole LAN in one view** — live status (ICMP / ARP / TCP), built-in **ARP scanner** to discover devices, plus search & sort
-- 🪶 **Self-hosted & lightweight** — one container, ~180 MB RAM (3 gunicorn workers, tunable lower), no cloud, no account, no telemetry
+- 🪶 **Self-hosted & lightweight** — one container, ~75 MB RAM (a single gunicorn worker by default), no cloud, no account, no telemetry
 
 ## Features
 
@@ -44,7 +44,7 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 
 **Experience**
 - 🌗 **Dark & light mode** · 🌍 **DE / EN** live switching
-- 📱 Responsive (desktop + mobile), modest footprint (~180 MB RAM, 3 workers — less with fewer)
+- 📱 Responsive (desktop + mobile), tiny footprint (~75 MB RAM with the default 1 worker / 4 threads)
 
 ## Screenshots
 
@@ -157,9 +157,12 @@ docker build -t wol-f:latest .
 | `ENABLE_L2_WOL_PACKET` | `false` | Use an L2 WOL packet instead of L4 |
 | `L2_INTERFACE` | `eth0` | Interface for L2 WOL |
 | `SCRIPT_NAME` | — | Run the app under a subpath |
-| `GUNICORN_WORKERS` | `3` | Number of gunicorn workers |
-| `GUNICORN_THREADS` | `2` | Threads per worker |
+| `GUNICORN_WORKERS` | `1` | Gunicorn worker processes — 1 is plenty for a home LAN; raise it only for many concurrent users |
+| `GUNICORN_THREADS` | `4` | Threads per worker — keeps parallel status checks snappy |
 | `GUNICORN_TIMEOUT` | `60` | Worker timeout (s) |
+
+> [!TIP]
+> **Sizing / performance.** The defaults (`GUNICORN_WORKERS=1`, `GUNICORN_THREADS=4`) are tuned for a typical single-user home LAN: **~75 MB RAM** and a snappy UI even when refreshing many devices at once (status checks are short, I/O-bound calls that the 4 threads run in parallel). Only raise `GUNICORN_WORKERS` if several people use the UI simultaneously — each extra worker adds ~55–60 MB.
 
 ## Access & HTTPS
 

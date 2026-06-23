@@ -71,7 +71,7 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 
 ### Deploy with Docker Compose / Portainer
 
-Paste one of these stacks into **Portainer → Stacks → Add stack**, or save it as `compose.yaml` and run `docker compose up -d`. Image is published on Docker Hub as `maikimolto/wol-f:latest`.
+Paste one of these stacks into **Portainer → Stacks → Add stack**, or save it as `compose.yaml` and run `docker compose up -d`. The stacks reference the image `maikimolto/wol-f:latest` — [build it from source](#build-from-source) and tag it accordingly, or pull it from Docker Hub once published.
 
 **🔓 Minimal — HTTP on your LAN**
 ```yaml

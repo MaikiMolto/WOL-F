@@ -86,7 +86,7 @@ services:
     environment:
       - TZ=Europe/Berlin
       - PORT=2600
-      - LANGUAGE=de
+      - LANGUAGE=en #de
     volumes:
       - ./appdata/db:/app/db
       - ./appdata/cron:/etc/cron.d
@@ -103,9 +103,9 @@ services:
     environment:
       - TZ=Europe/Berlin
       - PORT=2601
-      - LANGUAGE=de
+      - LANGUAGE=en #de
       - ENABLE_HTTPS=true         # serve HTTPS directly (self-signed cert auto-generated)
-      - ENABLE_LOGIN=true         # REQUIRED whenever HTTPS is enabled
+      - ENABLE_LOGIN=true         # REQUIRED whenever HTTPS is enabled!
       - USERNAME=admin
       - PASSWORD=change-me-please  # set a strong password!
     volumes:

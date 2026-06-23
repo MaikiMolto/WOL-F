@@ -92,15 +92,24 @@ def _wf_secret_key():
     return k
   path = '/app/db/.secret_key'
   try:
-    if os.path.exists(path):
-      return open(path).read().strip()
     os.makedirs('/app/db', exist_ok=True)
-    k = os.urandom(32).hex()
-    with open(path, 'w') as f:
-      f.write(k)
-    os.chmod(path, 0o600)
-    logger.info("Generated persistent SECRET_KEY at %s", path)
-    return k
+    # Serialize across gunicorn workers so a fresh DB doesn't race into divergent keys
+    lock = open('/app/db/.secret_key.lock', 'w')
+    try:
+      fcntl.flock(lock, fcntl.LOCK_EX)
+      if os.path.exists(path):
+        existing = open(path).read().strip()
+        if existing:
+          return existing
+      k = os.urandom(32).hex()
+      with open(path, 'w') as f:
+        f.write(k)
+      os.chmod(path, 0o600)
+      logger.info("Generated persistent SECRET_KEY at %s", path)
+      return k
+    finally:
+      fcntl.flock(lock, fcntl.LOCK_UN)
+      lock.close()
   except Exception as e:
     logger.warning("Could not persist SECRET_KEY (%s); using ephemeral key", e)
     return os.urandom(32).hex()

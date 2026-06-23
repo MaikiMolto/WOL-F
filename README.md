@@ -5,7 +5,7 @@
 
   **A modern, security-hardened Wake/Sleep-on-LAN fleet manager — wake and shut down the computers on your LAN from a clean web GUI.**
 
-  _by **MaikiMolto & Nex** · inspired by [GPTWOL](https://github.com/Misterbabou/gptwol)_
+  _by **[MaikiMolto](https://github.com/MaikiMolto) & Nex** · inspired by [GPTWOL](https://github.com/Misterbabou/gptwol)_
 </div>
 
 ---
@@ -184,7 +184,7 @@ Schedules use cron syntax behind a beginner-friendly builder (presets, weekdays,
 
 ## Credits
 
-- **WOL-F** — by **MaikiMolto & Nex**
+- **WOL-F** — by **[MaikiMolto](https://github.com/MaikiMolto) & Nex**
 - Inspired by **[GPTWOL](https://github.com/Misterbabou/gptwol)** by Misterbabou (MIT)
 - Sleep-on-LAN powered by **[SR-G/sleep-on-lan](https://github.com/SR-G/sleep-on-lan)**
 

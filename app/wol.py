@@ -173,8 +173,8 @@ def _rl_clear(ip):
       con.close()
   except Exception as e:
     logger.warning("rate-limit clear failed (%s)", e)
-WF_LANGUAGE = (os.environ.get('LANGUAGE', 'de') or 'de').strip().lower()
-if WF_LANGUAGE not in ('de', 'en'): WF_LANGUAGE = 'de'
+WF_LANGUAGE = (os.environ.get('LANGUAGE', 'en') or 'en').strip().lower()
+if WF_LANGUAGE not in ('de', 'en'): WF_LANGUAGE = 'en'
 # Feature-Flags explizit ans Template (statt das ganze os-Modul -> kein env-Leak in Jinja-Scope)
 WF_ENABLE_REFRESH = os.environ.get('ENABLE_REFRESH') != 'false'
 WF_REFRESH_INTERVAL_MS = max(int(os.environ.get('REFRESH_INTERVAL', '30') or 30), 5) * 1000

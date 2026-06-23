@@ -138,7 +138,7 @@ docker build -t wol-f:latest .
 | `TZ` | `UTC` | Timezone (used for cron) |
 | `PORT` | `2600` | Web UI port |
 | `IP` | `0.0.0.0` | Listen address (IPv4/IPv6) |
-| `LANGUAGE` | `de` | UI default language (`de` / `en`) |
+| `LANGUAGE` | `en` | UI default language (`en` / `de`) |
 | `LOG_LEVEL` | `INFO` | `DEBUG` / `INFO` / `WARN` / `ERROR` |
 | `ENABLE_LOGIN` | `false` | Enable single-user login |
 | `USERNAME` | `admin` | Login username |

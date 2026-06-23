@@ -12,3 +12,7 @@ _feedback/
 appdata/
 __pycache__/
 *.pyc
+
+# interne Dev-Doku (echte Netzdaten) - nicht public
+WOL-F-STATUS.md
+HANDOFF-*.md

@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 import logging
 import socket
+import sqlite3
 import struct
 import subprocess
 import os
@@ -118,7 +119,51 @@ if ENABLE_LOGIN and not LOGIN_PASSWORD:
 # Basic in-memory login rate limiting (per source IP)
 LOGIN_MAX_ATTEMPTS = int(os.environ.get('LOGIN_MAX_ATTEMPTS', '8'))
 LOGIN_WINDOW = int(os.environ.get('LOGIN_WINDOW', '300'))
-_login_attempts = {}
+_RL_DB = '/app/db/ratelimit.db'
+def _rl_conn():
+  con = sqlite3.connect(_RL_DB, timeout=5)
+  con.execute('CREATE TABLE IF NOT EXISTS login_attempts (ip TEXT PRIMARY KEY, count INTEGER NOT NULL, first_ts REAL NOT NULL)')
+  return con
+def _rl_is_limited(ip, now):
+  try:
+    con = _rl_conn()
+    try:
+      row = con.execute('SELECT count, first_ts FROM login_attempts WHERE ip=?', (ip,)).fetchone()
+    finally:
+      con.close()
+    if not row:
+      return False
+    cnt, first = row
+    if now - first > LOGIN_WINDOW:
+      return False
+    return cnt >= LOGIN_MAX_ATTEMPTS
+  except Exception as e:
+    logger.warning("rate-limit check failed (%s); allowing", e)
+    return False
+def _rl_record_fail(ip, now):
+  try:
+    con = _rl_conn()
+    try:
+      row = con.execute('SELECT count, first_ts FROM login_attempts WHERE ip=?', (ip,)).fetchone()
+      cnt, first = row if row else (0, now)
+      if now - first > LOGIN_WINDOW:
+        cnt, first = 0, now
+      con.execute('INSERT INTO login_attempts(ip, count, first_ts) VALUES(?,?,?) ON CONFLICT(ip) DO UPDATE SET count=excluded.count, first_ts=excluded.first_ts', (ip, cnt + 1, first))
+      con.commit()
+    finally:
+      con.close()
+  except Exception as e:
+    logger.warning("rate-limit record failed (%s)", e)
+def _rl_clear(ip):
+  try:
+    con = _rl_conn()
+    try:
+      con.execute('DELETE FROM login_attempts WHERE ip=?', (ip,))
+      con.commit()
+    finally:
+      con.close()
+  except Exception as e:
+    logger.warning("rate-limit clear failed (%s)", e)
 WF_LANGUAGE = (os.environ.get('LANGUAGE', 'de') or 'de').strip().lower()
 if WF_LANGUAGE not in ('de', 'en'): WF_LANGUAGE = 'de'
 # Feature-Flags explizit ans Template (statt das ganze os-Modul -> kein env-Leak in Jinja-Scope)
@@ -174,20 +219,17 @@ def login():
   if request.method == 'POST':
     ip = request.remote_addr or 'unknown'
     now = time.time()
-    cnt, first = _login_attempts.get(ip, (0, now))
-    if now - first > LOGIN_WINDOW:
-      cnt, first = 0, now
-    if cnt >= LOGIN_MAX_ATTEMPTS:
+    if _rl_is_limited(ip, now):
       logger.warning("Login rate-limited for %s", ip)
       return ('Too many login attempts. Try again later.', 429)
     u = request.form.get('username', '')
     p = request.form.get('password', '')
     if hmac.compare_digest(u.encode('utf-8'), LOGIN_USERNAME.encode('utf-8')) and hmac.compare_digest(p.encode('utf-8'), LOGIN_PASSWORD.encode('utf-8')):
-      _login_attempts.pop(ip, None)
+      _rl_clear(ip)
       session['logged_in'] = True
       session.permanent = True
       return redirect(url_for('wol_form'))
-    _login_attempts[ip] = (cnt + 1, first)
+    _rl_record_fail(ip, now)
     logger.warning("Failed login attempt from %s", ip)
     error = True
   return render_template('login.html', error=error, lang=WF_LANGUAGE)

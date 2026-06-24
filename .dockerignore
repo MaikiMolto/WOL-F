@@ -1,0 +1,38 @@
+# --- WOL-F .dockerignore ---
+# Keep real device/runtime data and local dev artifacts OUT of the published image.
+# NOTE: Docker COPY ignores .gitignore — this file is the only thing that stops
+#       app/db/ (real MACs/IPs) from being baked into the image.
+
+# Runtime / instance data (real MACs + IPs live here) - NEVER ship this
+app/db/
+
+# Locally downloaded web assets (re-fetched during the build stage)
+app/templates/assets/
+
+# Python caches
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Backups / migration leftovers (e.g. computers.txt.old)
+*.old
+
+# Dev environment / VCS
+.venv/
+.git/
+.github/
+.gitignore
+.dockerignore
+
+# Build / CI artifacts & logs
+build*.log
+_feedback/
+appdata/
+
+# Internal dev docs (may contain real network data)
+docs/
+HANDOFF-*.md
+WOL-F-STATUS*.md
+ROADMAP.md
+render-setup.sh

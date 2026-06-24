@@ -133,9 +133,9 @@
                 </div>
                 <div class="wf-cname">
                   <span class="sortable">{{ computer.name }}</span>
-                  {% if computer.type and computer.link -%}<a class="wf-typ wf-link" href="{{ computer.link }}" target="_blank" rel="noopener" data-tipkey="tipWebui" title="Web-UI">{{ computer.type }}<span class="wf-ext">&#8599;</span></a>
+                  {% if computer.type and computer.link -%}<a class="wf-typ wf-link" href="{{ computer.link }}" target="_blank" rel="noopener noreferrer" data-tipkey="tipWebui" title="Web-UI">{{ computer.type }}<span class="wf-ext">&#8599;</span></a>
                   {% elif computer.type -%}<span class="wf-typ">{{ computer.type }}</span>
-                  {% elif computer.link -%}<a class="wf-typ wf-link" href="{{ computer.link }}" target="_blank" rel="noopener" data-tipkey="tipWebui" title="Web-UI">Web-UI<span class="wf-ext">&#8599;</span></a>
+                  {% elif computer.link -%}<a class="wf-typ wf-link" href="{{ computer.link }}" target="_blank" rel="noopener noreferrer" data-tipkey="tipWebui" title="Web-UI">Web-UI<span class="wf-ext">&#8599;</span></a>
                   {% endif -%}
                 </div>
               </div>
@@ -198,7 +198,7 @@
           <div class="modal-body">
             <div class="form-group">
               <label for="name" data-i18n="mName">Name:</label>
-              <input type="text" class="form-control" name="name" id="name" required>
+              <input type="text" class="form-control" name="name" id="name" maxlength="64" required>
             </div>
             <div class="form-group">
               <label for="mac_address" data-i18n="mMac">MAC-Adresse:</label>
@@ -243,7 +243,7 @@
           <div class="modal-body">
               <div class="form-group">
                 <label for="name" data-i18n="mName">Name:</label>
-                <input type="text" class="form-control" name="name" id="edit_name" required>
+                <input type="text" class="form-control" name="name" id="edit_name" maxlength="64" required>
               </div>
               <div class="form-group">
                 <label for="mac_address" data-i18n="mMac">MAC-Adresse:</label>

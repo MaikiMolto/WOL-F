@@ -146,7 +146,7 @@ docker build -t wol-f:latest .
 | --- | --- | --- |
 | `TZ` | `UTC` | Timezone (used for cron) |
 | `PORT` | `2600` | Web UI port |
-| `IP` | `0.0.0.0` | Listen address (IPv4/IPv6) |
+| `IP` | `0.0.0.0` | Listen address |
 | `LANGUAGE` | `en` | UI default language (`en` / `de`) |
 | `LOG_LEVEL` | `INFO` | `DEBUG` / `INFO` / `WARN` / `ERROR` |
 | `ENABLE_LOGIN` | `false` | Enable single-user login |
@@ -195,7 +195,7 @@ GET /api/status            → {"online":5,"offline":1,"total":6,"timestamp":...
 GET /api/status?details=1  → also adds "devices":[{"name":"...","status":"online"}, ...]
 ```
 
-By default it returns **counts only — no MACs or IPs** — privacy-friendly and exactly what a dashboard tile needs.
+By default it returns **counts only — no MACs or IPs** — privacy-friendly and exactly what a dashboard tile needs. The optional **`?details=1`** (per-device names) is only returned to an **authenticated** caller — a logged-in session or a valid `STATUS_API_TOKEN` — so hostnames are never exposed on an otherwise-open endpoint.
 
 <div align="center">
   <img src="docs/screenshots/homepage-widget.png" width="340" alt="WOL-F live status tile on Homepage" />
@@ -206,7 +206,7 @@ By default it returns **counts only — no MACs or IPs** — privacy-friendly an
 
 ```yaml
 - WOL-F:
-    icon: mdi-lan-connect
+    icon: http://<host>:2600/templates/images/wol-f/favicon.png  # WOL-F ships its own logo
     href: http://<host>:2600/
     description: Wake-on-LAN Fleet
     widget:

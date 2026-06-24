@@ -189,6 +189,9 @@ STATUS_API_TOKEN = (os.environ.get('STATUS_API_TOKEN', '') or '').strip()
 STATUS_CACHE_TTL = max(int(os.environ.get('STATUS_CACHE_TTL', '10') or 10), 0)
 _status_cache = {'ts': 0.0, 'data': None}
 _status_cache_lock = threading.Lock()
+# Single-flight refresh lock: only one thread recomputes a stale/empty cache at a time
+# (others serve stale data) -> no thundering herd of full device probes on TTL expiry.
+_status_refresh_lock = threading.Lock()
 
 db_path = '/app/db/computers.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
@@ -419,7 +422,11 @@ def check_mac_exist(mac_address):
   return db.session.query(Computer.mac_address).filter_by(mac_address=mac_address).first() is not None
 
 def check_invalid_name(name):
-  return ',' in name
+  name = name or ''
+  # Reject empty, too long (DB column is String(64)), comma (cron/CSV separator) and control chars.
+  if not name.strip() or len(name) > 64 or ',' in name:
+    return True
+  return any(ord(ch) < 32 for ch in name)
 
 def check_invalid_ip(ip):
   try:
@@ -699,23 +706,43 @@ def _get_status_cached():
     cached = _status_cache['data']
     if cached is not None and (now - _status_cache['ts']) < STATUS_CACHE_TTL:
       return cached
-  # Compute outside the lock (device probes can take a while).
-  data = _compute_status()
+  # Stale or empty: single-flight refresh so concurrent requests don't all probe the
+  # whole fleet at once. One thread recomputes; others serve stale data if available,
+  # and only block when there is nothing to serve yet.
+  have_stale = cached is not None
+  if _status_refresh_lock.acquire(blocking=not have_stale):
+    try:
+      # Re-check: another thread may have refreshed while we waited for the lock.
+      with _status_cache_lock:
+        c = _status_cache['data']
+        if c is not None and (time.time() - _status_cache['ts']) < STATUS_CACHE_TTL:
+          return c
+      data = _compute_status()
+      with _status_cache_lock:
+        _status_cache['data'] = data
+        _status_cache['ts'] = time.time()
+      return data
+    finally:
+      _status_refresh_lock.release()
+  # Couldn't get the refresh lock but we have stale data -> serve it (stale-while-refresh).
   with _status_cache_lock:
-    _status_cache['data'] = data
-    _status_cache['ts'] = time.time()
-  return data
+    return _status_cache['data'] if _status_cache['data'] is not None else _compute_status()
 
 
 @app.route('/api/status')
 def api_status():
   # If a token is configured it is mandatory (fail closed); otherwise access follows the
   # normal login rule (open when ENABLE_LOGIN is off, session-only when it is on).
-  if STATUS_API_TOKEN and not _status_token_ok():
+  token_ok = _status_token_ok()
+  if STATUS_API_TOKEN and not token_ok:
     return jsonify({'error': 'unauthorized'}), 401
   data = _get_status_cached()
-  # Counts only by default; device list (names + status) only on ?details=1.
-  if request.args.get('details') not in ('1', 'true', 'yes'):
+  # Counts (online/offline/total) are public-friendly. The device list (?details=1)
+  # exposes hostnames, so it is only returned to authenticated callers (a logged-in
+  # session or a valid status token) -- never on an otherwise-open endpoint.
+  want_details = request.args.get('details') in ('1', 'true', 'yes')
+  authed = bool(session.get('logged_in')) or token_ok
+  if not (want_details and authed):
     data = {k: v for k, v in data.items() if k != 'devices'}
   resp = jsonify(data)
   resp.headers['Cache-Control'] = 'no-store'

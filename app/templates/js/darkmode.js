@@ -8,11 +8,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
   htmlElement.setAttribute('data-bs-theme', currentTheme);
   switchElement.checked = currentTheme === 'dark';
 
-  switchElement.addEventListener('click', function () {
-    switchElement.checked = !switchElement.checked; // Toggle the checkbox
-    switchElement.dispatchEvent(new Event('change')); // Trigger the change event
-  });
-
+  // The checkbox toggles itself natively on click and fires 'change'; we only react to
+  // 'change' (no extra click handler -> avoids the double-toggle theme glitch).
   switchElement.addEventListener('change', function () {
     const newTheme = this.checked ? 'dark' : 'light';
     htmlElement.setAttribute('data-bs-theme', newTheme);

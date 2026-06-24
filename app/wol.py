@@ -14,6 +14,7 @@ import re
 import fcntl
 import tempfile
 import contextlib
+import threading
 from urllib.parse import urlparse
 from markupsafe import Markup
 
@@ -180,6 +181,15 @@ WF_ENABLE_REFRESH = os.environ.get('ENABLE_REFRESH') != 'false'
 WF_REFRESH_INTERVAL_MS = max(int(os.environ.get('REFRESH_INTERVAL', '30') or 30), 5) * 1000
 WF_ENABLE_ADD_DEL = os.environ.get('ENABLE_ADD_DEL') != 'false'
 
+# --- Status API (/api/status) for dashboards (Heimdall, Homepage, Homarr, Glance, ...) ---
+# Optional token protection. If STATUS_API_TOKEN is set, callers must supply it via the
+# 'X-API-Key' header, an 'Authorization: Bearer <token>' header, or a '?token=' query param.
+STATUS_API_TOKEN = (os.environ.get('STATUS_API_TOKEN', '') or '').strip()
+# Short in-memory cache so UI polling + dashboard polling don't probe every device twice.
+STATUS_CACHE_TTL = max(int(os.environ.get('STATUS_CACHE_TTL', '10') or 10), 0)
+_status_cache = {'ts': 0.0, 'data': None}
+_status_cache_lock = threading.Lock()
+
 db_path = '/app/db/computers.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -217,6 +227,9 @@ def require_login():
   if not ENABLE_LOGIN:
     return
   if request.endpoint in ('static', 'login'):
+    return
+  # Allow the status API without a browser session IF a token is configured and valid.
+  if request.endpoint == 'api_status' and STATUS_API_TOKEN and _status_token_ok():
     return
   if session.get('logged_in'):
     return
@@ -645,6 +658,68 @@ def check_status():
     return 'awake'
   else:
     return 'asleep'
+
+
+def _status_token_ok():
+  # Only meaningful when STATUS_API_TOKEN is configured.
+  if not STATUS_API_TOKEN:
+    return False
+  supplied = request.headers.get('X-API-Key') or request.args.get('token') or ''
+  if not supplied:
+    auth = request.headers.get('Authorization', '')
+    if auth.startswith('Bearer '):
+      supplied = auth[len('Bearer '):]
+  return bool(supplied) and hmac.compare_digest(supplied.encode('utf-8'), STATUS_API_TOKEN.encode('utf-8'))
+
+
+def _compute_status():
+  computers = load_computers()
+  online = 0
+  devices = []
+  for c in computers:
+    awake = bool(is_computer_awake(c['ip_address'], c['test_type']))
+    if awake:
+      online += 1
+    devices.append({'name': c['name'], 'status': 'online' if awake else 'offline'})
+  total = len(computers)
+  return {
+    'online': online,
+    'offline': total - online,
+    'total': total,
+    'devices': devices,
+    'timestamp': int(time.time()),
+  }
+
+
+def _get_status_cached():
+  if STATUS_CACHE_TTL <= 0:
+    return _compute_status()
+  now = time.time()
+  with _status_cache_lock:
+    cached = _status_cache['data']
+    if cached is not None and (now - _status_cache['ts']) < STATUS_CACHE_TTL:
+      return cached
+  # Compute outside the lock (device probes can take a while).
+  data = _compute_status()
+  with _status_cache_lock:
+    _status_cache['data'] = data
+    _status_cache['ts'] = time.time()
+  return data
+
+
+@app.route('/api/status')
+def api_status():
+  # If a token is configured it is mandatory (fail closed); otherwise access follows the
+  # normal login rule (open when ENABLE_LOGIN is off, session-only when it is on).
+  if STATUS_API_TOKEN and not _status_token_ok():
+    return jsonify({'error': 'unauthorized'}), 401
+  data = _get_status_cached()
+  # Counts only by default; device list (names + status) only on ?details=1.
+  if request.args.get('details') not in ('1', 'true', 'yes'):
+    data = {k: v for k, v in data.items() if k != 'devices'}
+  resp = jsonify(data)
+  resp.headers['Cache-Control'] = 'no-store'
+  return resp
 
 @app.route('/wol_or_sol_send', methods=['POST'])
 def wol_or_sol_send():

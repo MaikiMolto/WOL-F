@@ -53,6 +53,12 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 | --- | --- |
 | ![WOL-F — dark](docs/screenshots/overview-dark.png) | ![WOL-F — light](docs/screenshots/overview-light.png) |
 
+**📊 Live dashboard tile** — show your fleet on Homepage / Heimdall / Homarr & co. via the [`/api/status`](#dashboard-integration-status-api) endpoint:
+
+<div align="center">
+  <img src="docs/screenshots/homepage-widget.png" width="360" alt="WOL-F live status tile on a dashboard" />
+</div>
+
 ### Dialogs & actions
 
 | Feature | Dark mode | Light mode |

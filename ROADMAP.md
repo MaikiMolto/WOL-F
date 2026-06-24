@@ -22,6 +22,9 @@ Eigenständiges, modernes Wake-/Sleep-on-LAN Dashboard fürs Homelab.
 - [x] **Smart On/Off-Switch** (iOS-Toggle): Grün=ON, Rot=OFF, Gelb=Pending · 5s-Poll im Pending · 4-Min-Timeout
 - [x] Farbiger Status-Streifen links an der Kachel (folgt dem Status, via `:has()`)
 - [x] **„Alle wecken / Alle schlafen"** — Bulk-Wake/Bulk-Shutdown für die ganze Flotte
+- [x] **Header-Live-Übersicht** — Online/Offline-Zähler live oben in der Leiste
+- [x] **Geräte-Typ-Badges** (z.B. SRV / NAS / PC) auf der Kachel — optional, klickbar als Web-UI-Link
+- [x] **Eigenes Icon-Set** für die Footer-Buttons (timer / edit / trash) statt Emoji-Mix
 
 **Features**
 - [x] **Schedule-Wecker** (Killer-Feature): Handy-Wecker-Style statt roher Cron-Syntax
@@ -37,12 +40,11 @@ Eigenständiges, modernes Wake-/Sleep-on-LAN Dashboard fürs Homelab.
 
 ---
 
-## 🔜 Geplant / Nice-to-have
+## 🎯 Status
 
-- [ ] **Geräte-Typ-Badges** (SRV / NAS / PC) — optional beim Hinzufügen, nie automatisch
-- [ ] **Footer-Buttons als feine Line-Icons** statt Emoji-Mix (dezent, Hover-Glow)
-- [ ] Header-**Live-Übersicht** prominent oben („5 Online · 1 Offline")
-- [ ] Weiterer Feinschliff: Design-Tokens, Micro-Animationen, mehr Doku
+**v1.0 ist Feature-complete** — alle geplanten Kernfeatures sind ausgeliefert.
+
+Ideen, Wünsche oder Bugs? → [Issues](https://github.com/MaikiMolto/WOL-F/issues) & PRs sind willkommen.
 
 ---
 

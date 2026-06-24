@@ -26,6 +26,7 @@ Eigenständiges, modernes Wake-/Sleep-on-LAN Dashboard fürs Homelab.
 **Features**
 - [x] **Schedule-Wecker** (Killer-Feature): Handy-Wecker-Style statt roher Cron-Syntax
   — Presets (Wochentage · täglich · Wochenende), Wochentag-Toggles, Time-Picker; Experten-Cron bleibt verfügbar
+- [x] **Job-Pausetoggle** auf der Kachel — Schedule scharf/unscharf schalten ohne löschen (Default: aktiv; „pausiert"-Label, DE/EN)
 - [x] **Live-Status** via ICMP / ARP / TCP + eingebauter **ARP-Netzwerk-Scanner** zum Geräte-Finden
 - [x] Optionaler **Login** + optionales eingebautes **HTTPS**
 - [x] **Security-Hardening**: CSRF-Tokens, Security-Header, Login-Rate-Limiting, persistenter Secret-Key, **fail-closed**
@@ -38,7 +39,6 @@ Eigenständiges, modernes Wake-/Sleep-on-LAN Dashboard fürs Homelab.
 
 ## 🔜 Geplant / Nice-to-have
 
-- [ ] **Job-Pausetoggle** auf der Kachel (Default OFF, kleiner als Hauptschalter): Schedule scharf/unscharf ohne löschen
 - [ ] **Geräte-Typ-Badges** (SRV / NAS / PC) — optional beim Hinzufügen, nie automatisch
 - [ ] **Footer-Buttons als feine Line-Icons** statt Emoji-Mix (dezent, Hover-Glow)
 - [ ] Header-**Live-Übersicht** prominent oben („5 Online · 1 Offline")

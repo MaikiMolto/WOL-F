@@ -22,6 +22,7 @@ WOL-F is a lightweight, self-hosted web app to **wake up** (Wake-on-LAN) and **s
 - 🔒 **Security-first by design** — CSRF protection, hardened session cookies, **persistent rate-limiting** (SQLite, shared across workers) and a **fail-closed rule: HTTPS *requires* login**
 - 📡 **Your whole LAN in one view** — live status (ICMP / ARP / TCP), built-in **ARP scanner** to discover devices, plus search & sort
 - 🪶 **Self-hosted & lightweight** — one container, ~75 MB RAM (a single gunicorn worker by default), no cloud, no account, no telemetry
+- 📊 **Dashboard-ready** — a lightweight **`/api/status`** JSON endpoint (online · offline · total) drops straight into Homepage, Heimdall, Homarr, Glance & co. as a live status tile (optional token auth)
 
 ## Features
 
@@ -150,6 +151,8 @@ docker build -t wol-f:latest .
 | `ENABLE_ADD_DEL` | `true` | Show add/delete buttons |
 | `ENABLE_REFRESH` | `true` | Auto status refresh |
 | `REFRESH_INTERVAL` | `30` | Status check interval (s) |
+| `STATUS_API_TOKEN` | — | If set, protects `/api/status` (passed via `X-API-Key` / `Bearer` / `?token=`); unset = open, follows the login rule |
+| `STATUS_CACHE_TTL` | `10` | Cache window (s) for `/api/status` so UI + dashboard polling don't double-probe devices |
 | `PING_TIMEOUT` | `300` | Ping timeout (ms) |
 | `ARP_INTERFACE` | — | ARP interface for scan/test |
 | `ARP_TIMEOUT` | `300` | ARP timeout (ms) |
@@ -174,6 +177,43 @@ By default WOL-F serves plain **HTTP** on `PORT`. Three ways to reach it:
 - **Direct HTTP** — `http://<host>:<PORT>` works out of the box (browsing, add/edit/delete all work).
 - **Reverse proxy (recommended for HTTPS)** — put Zoraxy/Caddy/nginx/Traefik in front and let it terminate TLS; the app speaks HTTP to the proxy.
 - **Built-in HTTPS (no proxy)** — set `ENABLE_HTTPS=true`. The app then serves HTTPS directly on `PORT` using a self-signed certificate auto-generated in `/app/db` (the browser shows a one-time warning). Provide your own `SSL_CERT`/`SSL_KEY` to avoid the warning.
+
+## Dashboard integration (Status API)
+
+WOL-F exposes a tiny read-only JSON endpoint that any dashboard can poll to show your fleet at a glance:
+
+```
+GET /api/status            → {"online":5,"offline":1,"total":6,"timestamp":...}
+GET /api/status?details=1  → also adds "devices":[{"name":"...","status":"online"}, ...]
+```
+
+By default it returns **counts only — no MACs or IPs** — privacy-friendly and exactly what a dashboard tile needs.
+
+<div align="center">
+  <img src="docs/screenshots/homepage-widget.png" width="340" alt="WOL-F live status tile on Homepage" />
+  <br><em>WOL-F as a live tile on <a href="https://gethomepage.dev">Homepage</a></em>
+</div>
+
+**Homepage (gethomepage)** — add a [Custom API](https://gethomepage.dev/widgets/services/customapi/) widget to `services.yaml`:
+
+```yaml
+- WOL-F:
+    icon: mdi-lan-connect
+    href: http://<host>:2600/
+    description: Wake-on-LAN Fleet
+    widget:
+      type: customapi
+      url: http://<host>:2600/api/status
+      refreshInterval: 30000
+      mappings:
+        - { field: online,  label: Online,  format: number }
+        - { field: offline, label: Offline, format: number }
+        - { field: total,   label: Devices, format: number }
+```
+
+The same JSON works with **Heimdall**, **Homarr**, **Glance** or anything that can read a JSON endpoint.
+
+**Optional token** — there's no key to fetch from anywhere: you **pick the value yourself** and set it as the `STATUS_API_TOKEN` env var (e.g. `STATUS_API_TOKEN=$(openssl rand -hex 24)`), then put the same string in your dashboard. This locks the endpoint down (fail-closed). Callers then pass it via the `X-API-Key` header, `Authorization: Bearer <token>`, or `?token=`; for Homepage add it under the widget as a `headers:` entry (`X-API-Key: <token>`).
 
 ## Configure Sleep-on-LAN
 

@@ -88,6 +88,7 @@ services:
       - TZ=Europe/Berlin
       - PORT=2600
       - LANGUAGE=en #de
+      # - STATUS_API_TOKEN=pick-any-secret-you-like   # optional: require this token for /api/status (dashboards)
     volumes:
       - ./appdata/db:/app/db
       - ./appdata/cron:/etc/cron.d
@@ -109,6 +110,7 @@ services:
       - ENABLE_LOGIN=true         # REQUIRED whenever HTTPS is enabled!
       - USERNAME=admin
       - PASSWORD=change-me-please  # set a strong password!
+      # - STATUS_API_TOKEN=pick-any-secret-you-like   # optional: require this token for /api/status (dashboards)
     volumes:
       - ./appdata/db:/app/db
       - ./appdata/cron:/etc/cron.d

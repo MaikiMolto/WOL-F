@@ -221,6 +221,18 @@ By default it returns **counts only — no MACs or IPs** — privacy-friendly an
 
 The same JSON works with **Heimdall**, **Homarr**, **Glance** or anything that can read a JSON endpoint.
 
+**Running the HTTPS instance (`ENABLE_HTTPS=true`, port `2601`)?** There `/api/status` is **not** open (login is required), so set a `STATUS_API_TOKEN`, point the widget at the HTTPS URL, and pass the token as a header:
+
+```yaml
+    widget:
+      type: customapi
+      url: https://<host>:2601/api/status
+      headers:
+        X-API-Key: your-status-token
+```
+
+The built-in HTTPS uses a **self-signed** certificate, so either put WOL-F behind a reverse proxy with a real cert, or simply point the dashboard at the plain-HTTP instance (`:2600`) for status polling.
+
 **Optional token** — there's no key to fetch from anywhere: you **pick the value yourself** and set it as the `STATUS_API_TOKEN` env var (e.g. `STATUS_API_TOKEN=$(openssl rand -hex 24)`), then put the same string in your dashboard. This locks the endpoint down (fail-closed). Callers then pass it via the `X-API-Key` header, `Authorization: Bearer <token>`, or `?token=`; for Homepage add it under the widget as a `headers:` entry (`X-API-Key: <token>`).
 
 ## Configure Sleep-on-LAN

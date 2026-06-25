@@ -93,7 +93,7 @@ services:
     environment:
       - TZ=Europe/Berlin
       - PORT=2600
-      - LANGUAGE=en #de
+      - LANGUAGE=en                # de
       # - STATUS_API_TOKEN=pick-any-secret-you-like   # optional: require this token for /api/status (dashboards)
     volumes:
       - ./appdata/db:/app/db
@@ -111,9 +111,9 @@ services:
     environment:
       - TZ=Europe/Berlin
       - PORT=2601
-      - LANGUAGE=en #de
-      - ENABLE_HTTPS=true         # serve HTTPS directly (self-signed cert auto-generated)
-      - ENABLE_LOGIN=true         # REQUIRED whenever HTTPS is enabled!
+      - LANGUAGE=en                # de
+      - ENABLE_HTTPS=true          # serve HTTPS directly (self-signed cert auto-generated)
+      - ENABLE_LOGIN=true          # REQUIRED whenever HTTPS is enabled!
       - USERNAME=admin
       - PASSWORD=change-me-please  # set a strong password!
       # - STATUS_API_TOKEN=pick-any-secret-you-like   # optional: require this token for /api/status (dashboards)

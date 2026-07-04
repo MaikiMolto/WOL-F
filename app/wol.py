@@ -1,7 +1,7 @@
-from flask import Flask, request, render_template, redirect, url_for, jsonify, flash, session
+from flask import Flask, request, render_template, redirect, url_for, jsonify, flash, session, abort
 import hmac
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, validate_csrf
 import logging
 import socket
 import sqlite3
@@ -749,7 +749,17 @@ def api_status():
   return resp
 
 @app.route('/wol_or_sol_send', methods=['POST'])
+@csrf.exempt
 def wol_or_sol_send():
+  # Dual auth: headless clients (n8n, scripts, cron) authenticate with a valid
+  # X-API-Key / Bearer token (the same STATUS_API_TOKEN used by /api/status) and
+  # are exempt from CSRF. Browser callers send no token, so the normal CSRF token
+  # is still enforced for them -> the Web-UI stays fully CSRF-protected.
+  if not _status_token_ok():
+    try:
+      validate_csrf(request.form.get('csrf_token') or request.headers.get('X-CSRFToken'))
+    except Exception:
+      abort(400, description='The CSRF token is missing.')
   mac_address = request.form['mac_address']
   computers = load_computers()
 

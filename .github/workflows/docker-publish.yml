@@ -35,9 +35,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Lowercases the repo name (GHCR requires it) and derives tags:
-      #   - the pushed tag (e.g. wol-f-auth-guard-fix, v1.3.0)
-      #   - :latest, but only for a push to a tag
+      # Lowercases the repo name (GHCR requires it) and derives tags.
+      # Every trigger MUST yield at least one tag — buildx fails with
+      # "tag is needed when pushing to registry" if the list comes out empty.
+      #   tag push          -> <tag> + latest
+      #   workflow_dispatch -> main-<sha> + edge   (no :latest — not a release)
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -46,6 +48,8 @@ jobs:
           tags: |
             type=ref,event=tag
             type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
+            type=sha,prefix={{branch}}-,enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=raw,value=edge,enable=${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Build and Push
         uses: docker/build-push-action@v6

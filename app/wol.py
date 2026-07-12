@@ -87,15 +87,20 @@ def sanitize_link(raw):
 
 app = Flask(__name__, static_folder='templates')
 
+# Directory for all persistent state (device DB, rate-limit DB, secret key, locks).
+# Defaults to the container path; overridable so the app can run outside Docker and
+# so tests can point at a temporary directory instead of touching real data.
+DB_DIR = os.environ.get('DB_DIR', '/app/db')
+
 def _wf_secret_key():
   k = os.environ.get('SECRET_KEY')
   if k:
     return k
-  path = '/app/db/.secret_key'
+  path = os.path.join(DB_DIR, '.secret_key')
   try:
-    os.makedirs('/app/db', exist_ok=True)
+    os.makedirs(DB_DIR, exist_ok=True)
     # Serialize across gunicorn workers so a fresh DB doesn't race into divergent keys
-    lock = open('/app/db/.secret_key.lock', 'w')
+    lock = open(os.path.join(DB_DIR, '.secret_key.lock'), 'w')
     try:
       fcntl.flock(lock, fcntl.LOCK_EX)
       if os.path.exists(path):
@@ -129,7 +134,7 @@ if ENABLE_LOGIN and not LOGIN_PASSWORD:
 # Basic in-memory login rate limiting (per source IP)
 LOGIN_MAX_ATTEMPTS = int(os.environ.get('LOGIN_MAX_ATTEMPTS', '8'))
 LOGIN_WINDOW = int(os.environ.get('LOGIN_WINDOW', '300'))
-_RL_DB = '/app/db/ratelimit.db'
+_RL_DB = os.path.join(DB_DIR, 'ratelimit.db')
 def _rl_conn():
   con = sqlite3.connect(_RL_DB, timeout=5)
   con.execute('CREATE TABLE IF NOT EXISTS login_attempts (ip TEXT PRIMARY KEY, count INTEGER NOT NULL, first_ts REAL NOT NULL)')
@@ -193,7 +198,7 @@ _status_cache_lock = threading.Lock()
 # (others serve stale data) -> no thundering herd of full device probes on TTL expiry.
 _status_refresh_lock = threading.Lock()
 
-db_path = '/app/db/computers.db'
+db_path = os.path.join(DB_DIR, 'computers.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
@@ -229,7 +234,14 @@ def wf_security_headers(resp):
 # valid STATUS_API_TOKEN instead of a browser session. Each of these routes performs
 # its own token check as well, so the token is validated twice — here to get past the
 # session guard, and again inside the route.
-TOKEN_AUTH_ENDPOINTS = ('api_status', 'wol_or_sol_send')
+#
+# The value says whether ?token=... is acceptable for that endpoint. State-changing
+# routes require a header, so the secret never lands in an access log or browser
+# history. The read-only status endpoint keeps query tokens for compatibility.
+TOKEN_AUTH_ENDPOINTS = {
+  'api_status':      True,   # read-only  -> ?token= still allowed (legacy)
+  'wol_or_sol_send': False,  # state-changing -> header only
+}
 
 
 @app.before_request
@@ -240,7 +252,8 @@ def require_login():
     return
   # Allow token-authenticated endpoints without a browser session IF a token is
   # configured and valid.
-  if request.endpoint in TOKEN_AUTH_ENDPOINTS and STATUS_API_TOKEN and _status_token_ok():
+  if request.endpoint in TOKEN_AUTH_ENDPOINTS and STATUS_API_TOKEN and \
+     _status_token_ok(allow_query_token=TOKEN_AUTH_ENDPOINTS[request.endpoint]):
     return
   if session.get('logged_in'):
     return
@@ -675,11 +688,18 @@ def check_status():
     return 'asleep'
 
 
-def _status_token_ok():
+def _status_token_ok(allow_query_token=True):
   # Only meaningful when STATUS_API_TOKEN is configured.
+  #
+  # allow_query_token=False rejects ?token=... and requires a header instead.
+  # Query strings end up in reverse-proxy access logs, browser history and
+  # copy-pasted URLs, so state-changing routes must not accept them. The
+  # read-only status endpoint keeps ?token= for backwards compatibility.
   if not STATUS_API_TOKEN:
     return False
-  supplied = request.headers.get('X-API-Key') or request.args.get('token') or ''
+  supplied = request.headers.get('X-API-Key') or ''
+  if not supplied and allow_query_token:
+    supplied = request.args.get('token') or ''
   if not supplied:
     auth = request.headers.get('Authorization', '')
     if auth.startswith('Bearer '):
@@ -759,11 +779,14 @@ def api_status():
 @app.route('/wol_or_sol_send', methods=['POST'])
 @csrf.exempt
 def wol_or_sol_send():
-  # Dual auth: headless clients (n8n, scripts, cron) authenticate with a valid
-  # X-API-Key / Bearer token (the same STATUS_API_TOKEN used by /api/status) and
-  # are exempt from CSRF. Browser callers send no token, so the normal CSRF token
+  # Dual auth: headless clients (schedulers, scripts, automation) authenticate with
+  # a valid X-API-Key / Bearer token (the same STATUS_API_TOKEN used by /api/status)
+  # and are exempt from CSRF. Browser callers send no token, so the normal CSRF token
   # is still enforced for them -> the Web-UI stays fully CSRF-protected.
-  if not _status_token_ok():
+  #
+  # allow_query_token=False: this route changes state, so the token must travel in a
+  # header. ?token=... would leak the secret into access logs and browser history.
+  if not _status_token_ok(allow_query_token=False):
     try:
       validate_csrf(request.form.get('csrf_token') or request.headers.get('X-CSRFToken'))
     except Exception:
@@ -849,7 +872,8 @@ with app.app_context():
   # Serialize first-run schema init across gunicorn workers (avoid create_all race on a fresh DB)
   _init_lock = None
   try:
-    _init_lock = open('/app/db/.init.lock', 'w')
+    os.makedirs(DB_DIR, exist_ok=True)
+    _init_lock = open(os.path.join(DB_DIR, '.init.lock'), 'w')
     fcntl.flock(_init_lock, fcntl.LOCK_EX)
   except Exception:
     _init_lock = None

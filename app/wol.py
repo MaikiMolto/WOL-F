@@ -225,14 +225,22 @@ def wf_security_headers(resp):
   return resp
 
 
+# Endpoints that headless clients (scripts, schedulers, automation) may reach with a
+# valid STATUS_API_TOKEN instead of a browser session. Each of these routes performs
+# its own token check as well, so the token is validated twice — here to get past the
+# session guard, and again inside the route.
+TOKEN_AUTH_ENDPOINTS = ('api_status', 'wol_or_sol_send')
+
+
 @app.before_request
 def require_login():
   if not ENABLE_LOGIN:
     return
   if request.endpoint in ('static', 'login'):
     return
-  # Allow the status API without a browser session IF a token is configured and valid.
-  if request.endpoint == 'api_status' and STATUS_API_TOKEN and _status_token_ok():
+  # Allow token-authenticated endpoints without a browser session IF a token is
+  # configured and valid.
+  if request.endpoint in TOKEN_AUTH_ENDPOINTS and STATUS_API_TOKEN and _status_token_ok():
     return
   if session.get('logged_in'):
     return
